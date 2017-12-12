@@ -7,12 +7,32 @@
 # command after changing this file, to see if there are
 # any tracked files which get ignored after the change.
 #
-# Normal rules
+# Normal rules (sorted alphabetically)
 #
 .*
+*.a
+*.bin
+*.bz2
+*.c.[012]*.*
+*.dtb
+*.dtb.S
+*.dwo
+*.elf
+*.gcno
+*.gz
+*.i
+*.ko
+*.ll
+*.lst
+*.lz4
+*.lzma
+*.lzo
+*.mod.c
 *.o
 *.o.*
 *.a
+*.order
+*.patch
 *.s
 *.ko
 *.so
@@ -20,6 +40,7 @@
 *.mod.c
 *.i
 *.lst
+*.su
 *.symtypes
 *.order
 *.elf
@@ -34,6 +55,7 @@
 *.patch
 *.gcno
 *.ll
+Module.symvers
 modules.builtin
 Module.symvers
 *.dwo
@@ -56,6 +78,11 @@ uImage
 /vmlinuz
 /System.map
 /Module.markers
+
+#
+# RPM spec file (make rpm-pkg)
+#
+/*.spec
 
 #
 # Debian directory (make deb-pkg)
