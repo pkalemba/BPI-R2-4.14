@@ -1,0 +1,55 @@
+--- arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dts	2017-12-08 14:48:13.376264223 +0800
++++ arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dts	2017-12-08 13:56:31.370356978 +0800
+@@ -48,6 +48,19 @@
+ 		};
+ 	};
+ 
++        reserved-memory {
++                #address-cells = <2>;
++                #size-cells = <2>;
++                ranges;
++
++                consys-reserve-memory {
++                        compatible = "mediatek,consys-reserve-memory";
++                        no-map;
++                        size = <0 0x100000>;
++                        alignment = <0 0x100000>;
++                };
++        };
++
+ 	fixedregulator3v3: regulator-3v3 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "fixed-3.3V";
+@@ -292,6 +305,24 @@
+ 		};
+ 	};
+ 
++        consys_pins_default: consys_pins_default {
++            adie {
++                pinmux = <MT7623_PIN_60_WB_RSTB_FUNC_WB_RSTB>,
++                         <MT7623_PIN_61_GPIO61_FUNC_TEST_FD>,
++                         <MT7623_PIN_62_GPIO62_FUNC_TEST_FC>,
++                         <MT7623_PIN_63_WB_SCLK_FUNC_WB_SCLK>,
++                         <MT7623_PIN_64_WB_SDATA_FUNC_WB_SDATA>,
++                         <MT7623_PIN_65_WB_SEN_FUNC_WB_SEN>,
++                         <MT7623_PIN_66_WB_CRTL0_FUNC_WB_CRTL0>,
++                         <MT7623_PIN_67_WB_CRTL1_FUNC_WB_CRTL1>,
++                         <MT7623_PIN_68_WB_CRTL2_FUNC_WB_CRTL2>,
++                         <MT7623_PIN_69_WB_CRTL3_FUNC_WB_CRTL3>,
++                         <MT7623_PIN_70_WB_CRTL4_FUNC_WB_CRTL4>,
++                         <MT7623_PIN_71_WB_CRTL5_FUNC_WB_CRTL5>;
++                bias-disable;
++            };
++        };
++
+ 	eth_default: eth {
+ 		pins_eth {
+ 			pinmux = <MT7623_PIN_275_G2_MDC_FUNC_MDC>,
+@@ -828,3 +1090,7 @@
+ &u3phy2 {
+ 	status = "okay";
+ };
++
++&watchdog {
++	status = "okay";
++};
