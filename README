@@ -1,3 +1,12 @@
+Internal WiFi - Branch
+
+compile fails, see build.log
+
+  git clone https://github.com/frank-w/bananapi-r2-Kernel-4.14.git
+  git checkout wifi_mt6625l
+  ./build.sh importconfig
+  ./build.sh
+
 Linux kernel
 ============
 
