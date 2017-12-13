@@ -8,7 +8,7 @@ fi
 if [[ -d drivers ]];
 then
   action=$1
-
+  LANG=C
   #git pull
   #git reset --hard v4.14
   export INSTALL_MOD_PATH=$(dirname $(pwd))/mod/;export ARCH=arm;export CROSS_COMPILE=arm-linux-gnueabihf-
@@ -46,10 +46,12 @@ then
   if [[ -z "$action" ]];
   then
  #   set -x
+    exec 3> >(tee build.log)
 #    make --debug && make modules_install
-    make && make modules_install
+    make 2>&3 && make modules_install 2>&3
     ret=$?
 #    set +x
+    exec 3>&-
     if [[ $ret == 0 ]];
     then
       cat arch/arm/boot/zImage arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb > arch/arm/boot/zImage-dtb

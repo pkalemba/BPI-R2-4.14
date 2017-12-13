@@ -130,6 +130,43 @@
 		clock-output-names = "rtc32k";
 	};
 
+//added by FWU for r2 internal wifi/bt
+
+        reserved-memory {
+                #address-cells = <2>;
+                #size-cells = <2>;
+                ranges;
+
+                trustzone-bootinfo@80002000 {
+                        compatible = "mediatek,trustzone-bootinfo";
+                        reg = <0 0x80002000 0 0x1000>;
+                };
+
+                ram_console-reserved-memory@83f00000 {
+                        compatible = "mediatek,ram_console";
+                        reg = <0 0x83f00000 0 0x10000>;
+                };
+
+                pstore-reserved-memory@83f10000 {
+                        compatible = "mediatek,pstore";
+                        reg = <0 0x83f10000 0 0xe0000>;
+                };
+
+                minirdump-reserved-memory@83ff0000 {
+                        compatible = "mediatek,minirdump";
+                        reg = <0 0x83ff0000 0 0x10000>;
+                };
+
+                consys-reserve-memory {
+                        compatible = "mediatek,consys-reserve-memory";
+                        no-map;
+                        size = <0 0x100000>;
+                        alignment = <0 0x100000>;
+                };
+};
+ 
+//end added by FWU
+
 	clk26m: oscillator@0 {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
@@ -263,8 +300,6 @@
 		compatible = "mediatek,mt7623-wdt",
 			     "mediatek,mt6589-wdt";
 		reg = <0 0x10007000 0 0x100>;
-                interrupts = <GIC_SPI 88 IRQ_TYPE_EDGE_FALLING>;
-                #reset-cells = <1>;
 	};
 
 	timer: timer@10008000 {
@@ -352,6 +387,33 @@
 		clock-names = "main";
 		#io-channel-cells = <1>;
 	};
+
+
+//added by fwu for wifi/bt
+        btif_tx: btif_tx@11000780 {
+                compatible = "mediatek,btif_tx";
+                reg = <0 0x11000780 0 0x80>;
+                interrupts = <GIC_SPI 71 IRQ_TYPE_LEVEL_LOW>;
+		status = "okay";
+        };
+
+        btif_rx: btif_rx@11000800 {
+                compatible = "mediatek,btif_rx";
+                reg = <0 0x11000800 0 0x80>;
+                interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_LOW>;
+		status = "okay";
+        };
+
+        btif: btif@1100c000 {
+                compatible = "mediatek,btif";
+                reg = <0 0x1100c000 0 0x1000>;
+                interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_LOW>;
+                clocks = <&pericfg CLK_PERI_BTIF>, <&pericfg CLK_PERI_AP_DMA>;
+                clock-names = "btifc", "apdmac";
+		status = "okay";
+	};
+
+//end added for wifi/bt
 
 	uart0: serial@11002000 {
 		compatible = "mediatek,mt7623-uart",
@@ -487,7 +549,7 @@
 		nvmem-cells = <&thermal_calibration_data>;
 		nvmem-cell-names = "calibration-data";
 	};
-*/
+
 	nandc: nfi@1100d000 {
 		compatible = "mediatek,mt7623-nfc",
 			     "mediatek,mt2701-nfc";
@@ -640,17 +702,6 @@
 			 "top_syspll_d5";
 	};
 
-	mmc0: mmc@11230000 {
-		compatible = "mediatek,mt7623-mmc",
-			     "mediatek,mt2701-mmc";
-		reg = <0 0x11230000 0 0x1000>;
-		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_LOW>;
-		clocks = <&pericfg CLK_PERI_MSDC30_0>,
-			 <&topckgen CLK_TOP_MSDC30_0_SEL>;
-		clock-names = "source", "hclk";
-		status = "disabled";
-	};
-
 	mmc1: mmc@11240000 {
 		compatible = "mediatek,mt7623-mmc",
 			     "mediatek,mt2701-mmc";
@@ -662,19 +713,32 @@
 		status = "disabled";
 	};
 
-        consys: consys@18070000 {
-                compatible = "mediatek,mt7623-consys";
-                reg = <0 0x18070000 0 0x0200>,  /*CONN_MCU_CONFIG_BASE      */
-                      <0 0x10001000 0 0x1600>;  /*TOPCKGEN_BASE             */
-                clocks = <&infracfg CLK_INFRA_CONNMCU>;
-                clock-names = "consysbus";
-                power-domains = <&scpsys MT2701_POWER_DOMAIN_CONN>;
-                interrupts = <GIC_SPI 185 IRQ_TYPE_LEVEL_LOW>,  /* BGF_EINT */
-                             <GIC_SPI 163 IRQ_TYPE_LEVEL_LOW>;  /* WDT_EINT */
-                resets = <&watchdog MT2701_TOPRGU_CONN_MCU_RST>;
-                reset-names = "connsys";
-                status="disabled";
-        };
+	mmc0: mmc@11230000 {
+		compatible = "mediatek,mt7623-mmc",
+			     "mediatek,mt2701-mmc";
+		reg = <0 0x11230000 0 0x1000>;
+		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_LOW>;
+		clocks = <&pericfg CLK_PERI_MSDC30_0>,
+			 <&topckgen CLK_TOP_MSDC30_0_SEL>;
+		clock-names = "source", "hclk";
+		status = "disabled";
+	};
+
+//added by FWU for wifi/bt
+
+	consys: consys@18070000 {
+		compatible = "mediatek,mt7623-consys";
+		reg = <0 0x18070000 0 0x0200>,  /*CONN_MCU_CONFIG_BASE      */
+		      <0 0x10001000 0 0x1600>;  /*TOPCKGEN_BASE             */
+		clocks = <&infracfg CLK_INFRA_CONNMCU>;
+		clock-names = "consysbus";
+		power-domains = <&scpsys MT2701_POWER_DOMAIN_CONN>;
+		interrupts = <GIC_SPI 185 IRQ_TYPE_LEVEL_LOW>,  /* BGF_EINT */
+			     <GIC_SPI 163 IRQ_TYPE_LEVEL_LOW>;  /* WDT_EINT */
+		resets = <&watchdog MT2701_TOPRGU_CONN_MCU_RST>;
+		reset-names = "connsys";
+		status="disabled";
+	};
 
         wifi:wifi@180f0000 {
                 compatible = "mediatek,mt7623-wifi",
@@ -683,7 +747,9 @@
                 interrupts = <GIC_SPI 184 IRQ_TYPE_LEVEL_LOW>;
                 clocks = <&pericfg CLK_PERI_AP_DMA>;
                 clock-names = "wifi-dma";
-        };
+};
+
+//end added
 
 	hifsys: syscon@1a000000 {
 		compatible = "mediatek,mt7623-hifsys",
