@@ -1,24 +1,4 @@
 drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
 drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
-drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.o: In function `mtk_wcn_consys_stp_btif_tx':
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.c:155: undefined reference to `mtk_wcn_btif_write'
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.c:170: undefined reference to `mtk_wcn_btif_write'
-drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.o: In function `mtk_wcn_consys_stp_btif_open':
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.c:81: undefined reference to `mtk_wcn_btif_open'
-drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.o: In function `mtk_wcn_consys_stp_btif_close':
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.c:101: undefined reference to `mtk_wcn_btif_close'
-drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.o: In function `mtk_wcn_consys_stp_btif_rx_cb_register':
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.c:121: undefined reference to `mtk_wcn_btif_rx_cb_register'
-drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.o: In function `mtk_wcn_consys_stp_btif_wakeup':
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.c:204: undefined reference to `mtk_wcn_btif_wakeup_consys'
-drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.o: In function `mtk_wcn_consys_stp_btif_dpidle_ctrl':
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.c:224: undefined reference to `mtk_wcn_btif_dpidle_ctrl'
-drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.o: In function `mtk_wcn_consys_stp_btif_lpbk_ctrl':
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.c:239: undefined reference to `mtk_wcn_btif_loopback_ctrl'
-drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.o: In function `mtk_wcn_consys_stp_btif_logger_ctrl':
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.c:259: undefined reference to `mtk_wcn_btif_dbg_ctrl'
-drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.o: In function `mtk_wcn_consys_stp_btif_parser_wmt_evt':
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_btif.c:277: undefined reference to `mtk_wcn_btif_parser_wmt_evt'
-drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_dbg.o: In function `is_btif_rxd_be_blocked':
-/media/data_ext/test_4.14/github/drivers/misc/mediatek/connectivity/common/conn_soc/linux/pri/stp_dbg.c:489: undefined reference to `mtk_btif_rxd_be_blocked_flag_get'
-make: *** [vmlinux] Error 1
+drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
+drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
