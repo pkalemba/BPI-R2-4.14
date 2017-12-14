@@ -415,6 +415,17 @@
 
 //end added for wifi/bt
 
+	uart2: serial@11004000 {
+		compatible = "mediatek,mt7623-uart",
+			     "mediatek,mt6577-uart";
+		reg = <0 0x11004000 0 0x400>;
+		interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_LOW>;
+		clocks = <&pericfg CLK_PERI_UART2_SEL>,
+			 <&pericfg CLK_PERI_UART2>;
+		clock-names = "baud", "bus";
+		status = "disabled";
+	};
+
 	uart0: serial@11002000 {
 		compatible = "mediatek,mt7623-uart",
 			     "mediatek,mt6577-uart";
@@ -433,17 +444,6 @@
 		interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_LOW>;
 		clocks = <&pericfg CLK_PERI_UART1_SEL>,
 			 <&pericfg CLK_PERI_UART1>;
-		clock-names = "baud", "bus";
-		status = "disabled";
-	};
-
-	uart2: serial@11004000 {
-		compatible = "mediatek,mt7623-uart",
-			     "mediatek,mt6577-uart";
-		reg = <0 0x11004000 0 0x400>;
-		interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_LOW>;
-		clocks = <&pericfg CLK_PERI_UART2_SEL>,
-			 <&pericfg CLK_PERI_UART2>;
 		clock-names = "baud", "bus";
 		status = "disabled";
 	};
