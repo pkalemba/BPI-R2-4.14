@@ -7,6 +7,19 @@ compiles fine (wifi), tests needed
   ./build.sh importconfig
   ./build.sh
 
+  to use it:
+
+  copy firmware and tools to SD-Card from https://github.com/BPI-SINOVOIP/BPI-R2-bsp/tree/master/vendor/mediatek/connectivity
+
+  make a clean boot of bpi-r2
+  remove wpasupplicant if installed: "apt-get remove wpasupplicant"
+  run the following commands:
+    wmt_loader
+    stp_uart_launcher -p /etc/firmware &
+    echo A >/dev/wmtWifi #(activate AP-Mode)
+
+  if you type "ip a" you should see a ap0-device
+
 Linux kernel
 ============
 
