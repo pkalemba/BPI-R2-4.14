@@ -273,12 +273,17 @@ INT32 wmt_plat_deinit(VOID)
 
 	/* 1. de-init cmb_hw */
 	iret = mtk_wcn_cmb_hw_deinit();
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	/* 2. unreg to cmb_stub */
 	iret += mtk_wcn_cmb_stub_unreg();
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	/*3. wmt wakelock deinit */
 #ifdef CFG_WMT_WAKELOCK_SUPPORT
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	wake_lock_destroy(&wmtWakeLock);
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	osal_sleepable_lock_deinit(&gOsSLock);
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	WMT_DBG_FUNC("destroy wmtWakeLock\n");
 #endif
 	WMT_DBG_FUNC("WMT-PLAT: ALPS platform init (%d)\n", iret);
@@ -426,16 +431,19 @@ static INT32 wmt_plat_dump_pin_conf(VOID)
 INT32 wmt_plat_pwr_ctrl(ENUM_FUNC_STATE state)
 {
 	INT32 ret = -1;
-
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	switch (state) {
 	case FUNC_ON:
 		/* TODO:[ChangeFeature][George] always output this or by request throuth /proc or sysfs? */
 		wmt_plat_dump_pin_conf();
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		ret = mtk_wcn_cmb_hw_pwr_on();
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		break;
 
 	case FUNC_OFF:
 		ret = mtk_wcn_cmb_hw_pwr_off();
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		break;
 
 	case FUNC_RST:

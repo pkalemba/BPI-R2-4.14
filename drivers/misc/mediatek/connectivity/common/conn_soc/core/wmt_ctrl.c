@@ -356,10 +356,8 @@ INT32 wmt_ctrl_hw_pwr_off(P_WMT_CTRL_DATA pWmtCtrlData)
 INT32 wmt_ctrl_hw_pwr_on(P_WMT_CTRL_DATA pWmtCtrlData)
 {
 	INT32 iret;
-
 	/*psm should be enabled right after wmt_ic_init */
 	P_DEV_WMT pDev = &gDevWmt;
-
 	if (osal_test_and_set_bit(WMT_STAT_PWR, &pDev->state)) {
 		WMT_WARN_FUNC("already on\n");
 		iret = 0;
