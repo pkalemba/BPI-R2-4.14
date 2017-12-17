@@ -2393,7 +2393,6 @@ static int WMT_init(void)
 	/*static allocate chrdev */
 	gWmtInitDone = 0;
 	init_waitqueue_head((wait_queue_head_t *) &gWmtInitWq);
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	stp_drv_init();
 
 	ret = register_chrdev_region(devID, WMT_DEV_NUM, WMT_DRIVER_NAME);
@@ -2401,89 +2400,68 @@ printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		WMT_ERR_FUNC("fail to register chrdev\n");
 		return ret;
 	}
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	cdev_init(&gWmtCdev, &gWmtFops);
 	gWmtCdev.owner = THIS_MODULE;
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	cdevErr = cdev_add(&gWmtCdev, devID, WMT_DEV_NUM);
 	if (cdevErr) {
 		WMT_ERR_FUNC("cdev_add() fails (%d)\n", cdevErr);
 		goto error;
 	}
 	WMT_INFO_FUNC("driver(major %d) installed\n", gWmtMajor);
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 #if WMT_CREATE_NODE_DYNAMIC
 	wmt_class = class_create(THIS_MODULE, "stpwmt");
 	if (IS_ERR(wmt_class))
 		goto error;
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	wmt_dev = device_create(wmt_class, NULL, devID, NULL, "stpwmt");
 	if (IS_ERR(wmt_dev))
 		goto error;
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 #endif
 
 #if 0
 	pWmtDevCtx = wmt_drv_create();
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (!pWmtDevCtx) {
 		WMT_ERR_FUNC("wmt_drv_create() fails\n");
 		goto error;
 	}
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	ret = wmt_drv_init(pWmtDevCtx);
 	if (ret) {
 		WMT_ERR_FUNC("wmt_drv_init() fails (%d)\n", ret);
 		goto error;
 	}
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	WMT_INFO_FUNC("stp_btmcb_reg\n");
 	wmt_cdev_btmcb_reg();
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	ret = wmt_drv_start(pWmtDevCtx);
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (ret) {
 		WMT_ERR_FUNC("wmt_drv_start() fails (%d)\n", ret);
 		goto error;
 	}
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 #endif
 	ret = wmt_lib_init();
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (ret) {
 		WMT_ERR_FUNC("wmt_lib_init() fails (%d)\n", ret);
 		goto error;
 	}
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 #if CFG_WMT_DBG_SUPPORT
 	wmt_dev_dbg_setup();
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 #endif
 
 #if CFG_WMT_PROC_FOR_AEE
 	wmt_dev_proc_for_aee_setup();
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 #endif
 
 	WMT_INFO_FUNC("wmt_dev register thermal cb\n");
 	wmt_lib_register_thermal_ctrl_cb(wmt_dev_tm_temp_query);
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	wmt_dev_bgw_desense_init();
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	gWmtInitDone = 1;
 	wake_up(&gWmtInitWq);
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	osal_sleepable_lock_init(&g_es_lr_lock);
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	INIT_WORK(&gPwrOnOffWork, wmt_pwr_on_off_handler);
 #ifdef CONFIG_EARLYSUSPEND
 	register_early_suspend(&wmt_early_suspend_handler);
 	WMT_INFO_FUNC("register_early_suspend finished\n");
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 #else
 	wmt_fb_notifier.notifier_call = wmt_fb_notifier_callback;
 	ret = fb_register_client(&wmt_fb_notifier);
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (ret)
 		WMT_ERR_FUNC("wmt register fb_notifier failed! ret(%d)\n", ret);
 	else
@@ -2494,10 +2472,8 @@ printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 error:
 	wmt_lib_deinit();
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 #if CFG_WMT_DBG_SUPPORT
 	wmt_dev_dbg_remove();
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 #endif
 #if WMT_CREATE_NODE_DYNAMIC
 	if (!(IS_ERR(wmt_dev)))

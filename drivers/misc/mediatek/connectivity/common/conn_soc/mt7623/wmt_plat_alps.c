@@ -352,17 +352,24 @@ INT32 wmt_plat_deinit(VOID)
 	INT32 iret = 0;
 	/* 2. unreg to cmb_stub */
 	iret = mtk_wcn_cmb_stub_unreg();
-
+printk(KERN_ALERT "DEBUG: Passed %s %d now calling wmt wakelock deinit\n",__FUNCTION__,__LINE__);
 	/*3. wmt wakelock deinit */
 #ifdef CFG_WMT_WAKELOCK_SUPPORT
 #ifdef CONFIG_PM_WAKELOCKS
+printk(KERN_ALERT "DEBUG: Passed %s %d now calling wakeup_source_trash\n",__FUNCTION__,__LINE__);
 	wakeup_source_trash(&wmtWakeLock);
 #else
+printk(KERN_ALERT "DEBUG: Passed %s %d now calling wake lock destroy %d\n",__FUNCTION__,__LINE__,(int)&wmtWakeLock);
+//destroy calls wakeup_source_trash with &lock->ws
+printk(KERN_ALERT "DEBUG: Passed %s %d now wmtWakeLock:%d\n",__FUNCTION__,__LINE__,(int)&wmtWakeLock);
+printk(KERN_ALERT "DEBUG: Passed %s %d now wmtWakeLock->ws: %d\n",__FUNCTION__,__LINE__,(int)&(wmtWakeLock.ws));
 	wake_lock_destroy(&wmtWakeLock);
 #endif
+printk(KERN_ALERT "DEBUG: Passed %s %d now calling mutex_destroy\n",__FUNCTION__,__LINE__);
 	mutex_destroy(&gOsSLock);
 	WMT_PLAT_DBG_FUNC("destroy wmtWakeLock\n");
 #endif
+printk(KERN_ALERT "DEBUG: Passed %s %d now calling consys hw deinit\n",__FUNCTION__,__LINE__);
 
 	iret += mtk_wcn_consys_hw_deinit();
 
