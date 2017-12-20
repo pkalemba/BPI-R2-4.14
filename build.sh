@@ -12,6 +12,7 @@ if [[ -d drivers ]];
 then
   action=$1
 
+  CFLAGS=-j$(grep ^processor /proc/cpuinfo  | wc -l)
   #git pull
   #git reset --hard v4.14
   export INSTALL_MOD_PATH=$(dirname $(pwd))/mod/;export ARCH=arm;export CROSS_COMPILE=arm-linux-gnueabihf-
@@ -50,7 +51,7 @@ then
   then
  #   set -x
 #    make --debug && make modules_install
-    make && make modules_install
+    make ${CFLAGS} && make modules_install
     ret=$?
 #    set +x
     if [[ $ret == 0 ]];
