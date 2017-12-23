@@ -13,6 +13,7 @@
 
 #include <linux/netfilter_bridge.h>
 
+#include <linux/of.h>
 #include <net/arp.h>
 #include <net/neighbour.h>
 #include <net/netfilter/nf_conntrack_helper.h>

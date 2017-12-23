@@ -1,0 +1,22 @@
+drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
+drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
+drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c: In function ‘skb_to_hnat_info’:
+drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c:30:9: error: missing braces around initializer [-Werror=missing-braces]
+  struct foe_entry entry = { 0 };
+         ^
+drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c:30:9: error: (near initialization for ‘entry.<anonymous>’) [-Werror=missing-braces]
+drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c: In function ‘hnat_register_nf_hooks’:
+drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c:282:2: error: implicit declaration of function ‘nf_register_hooks’ [-Werror=implicit-function-declaration]
+  return nf_register_hooks(mtk_hnat_nf_ops,
+  ^
+drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c: In function ‘hnat_unregister_nf_hooks’:
+drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c:288:2: error: implicit declaration of function ‘nf_unregister_hooks’ [-Werror=implicit-function-declaration]
+  nf_unregister_hooks(mtk_hnat_nf_ops,
+  ^
+cc1: all warnings being treated as errors
+make[5]: *** [drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.o] Fehler 1
+make[4]: *** [drivers/net/ethernet/mediatek/mtk_hnat] Fehler 2
+make[3]: *** [drivers/net/ethernet/mediatek] Fehler 2
+make[2]: *** [drivers/net/ethernet] Fehler 2
+make[1]: *** [drivers/net] Fehler 2
+make: *** [drivers] Fehler 2
