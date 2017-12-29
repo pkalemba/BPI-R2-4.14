@@ -1,9 +1,8 @@
 HNAT-Branch
 
-does currently not compile because of old depencies to "nf_register_hooks" and "nf_unregister_hooks" (net/netfilter.h)
+compiles fine
 
-see build.log
-
+tests needed
 
 
 Master-Branch
