@@ -231,6 +231,8 @@ static void hnat_stop(void)
 
 static int hnat_probe(struct platform_device *pdev)
 {
+	struct net *net;
+	int ret;
 	int err = 0;
 	struct resource *res ;
 	const char *name;
@@ -272,10 +274,13 @@ static int hnat_probe(struct platform_device *pdev)
 	if (err)
 		goto err_out;
 
-	err = hnat_register_nf_hooks();
-	if (err)
-		goto err_out;
-
+	//err = hnat_register_nf_hooks(); //how to call the function with net-param??
+	for_each_net(net) {
+		ret=hnat_register_nf_hooks(net);
+		//if (err)
+		if (ret && ret != -ENOENT)
+			goto err_out;
+	}
 	return 0;
 
 err_out:
@@ -286,7 +291,12 @@ err_out:
 
 static int hnat_remove(struct platform_device *pdev)
 {
-	hnat_unregister_nf_hooks();
+	struct net *net;
+	//hnat_unregister_nf_hooks(); //how to call the function with net-param??
+    for_each_net(net) {
+        hnat_unregister_nf_hooks(net);
+    }
+
 	hnat_stop();
 	hnat_deinit_debugfs(host);
 

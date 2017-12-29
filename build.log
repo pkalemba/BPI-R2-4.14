@@ -1,23 +1,5 @@
 drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
 drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
-drivers/net/ethernet/mediatek/mtk_hnat/hnat.c: In function ‘hnat_probe’:
-drivers/net/ethernet/mediatek/mtk_hnat/hnat.c:275:2: error: too few arguments to function ‘hnat_register_nf_hooks’
-  err = hnat_register_nf_hooks();
-  ^
-In file included from drivers/net/ethernet/mediatek/mtk_hnat/hnat.c:23:0:
-drivers/net/ethernet/mediatek/mtk_hnat/hnat.h:425:12: note: declared here
- extern int hnat_register_nf_hooks(struct net *net);
-            ^
-drivers/net/ethernet/mediatek/mtk_hnat/hnat.c: In function ‘hnat_remove’:
-drivers/net/ethernet/mediatek/mtk_hnat/hnat.c:289:2: error: too few arguments to function ‘hnat_unregister_nf_hooks’
-  hnat_unregister_nf_hooks();
-  ^
-In file included from drivers/net/ethernet/mediatek/mtk_hnat/hnat.c:23:0:
-drivers/net/ethernet/mediatek/mtk_hnat/hnat.h:426:13: note: declared here
- extern void hnat_unregister_nf_hooks(struct net *net);
-             ^
-make[5]: *** [drivers/net/ethernet/mediatek/mtk_hnat/hnat.o] Fehler 1
-make[5]: *** Auf noch nicht beendete Prozesse wird gewartet …
 drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c: In function ‘skb_to_hnat_info’:
 drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c:31:9: error: missing braces around initializer [-Werror=missing-braces]
   struct foe_entry entry = { 0 };
@@ -25,8 +7,11 @@ drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c:31:9: error: missing brace
 drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.c:31:9: error: (near initialization for ‘entry.<anonymous>’) [-Werror=missing-braces]
 cc1: all warnings being treated as errors
 make[5]: *** [drivers/net/ethernet/mediatek/mtk_hnat/hnat_nf_hook.o] Fehler 1
+make[5]: *** Auf noch nicht beendete Prozesse wird gewartet …
 make[4]: *** [drivers/net/ethernet/mediatek/mtk_hnat] Fehler 2
 make[3]: *** [drivers/net/ethernet/mediatek] Fehler 2
 make[2]: *** [drivers/net/ethernet] Fehler 2
+make[2]: *** Auf noch nicht beendete Prozesse wird gewartet …
 make[1]: *** [drivers/net] Fehler 2
 make: *** [drivers] Fehler 2
+make: *** Auf noch nicht beendete Prozesse wird gewartet …
