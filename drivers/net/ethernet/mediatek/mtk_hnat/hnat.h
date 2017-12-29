@@ -15,7 +15,7 @@
 #include <linux/string.h>
 #include <linux/if.h>
 #include <linux/if_ether.h>
-
+#include <net/net_namespace.h>
 /*--------------------------------------------------------------------------*/
 /* Register Offset*/
 /*--------------------------------------------------------------------------*/
@@ -420,6 +420,8 @@ extern struct hnat_priv *host;
 
 extern void hnat_deinit_debugfs(struct hnat_priv *h);
 extern int __init hnat_init_debugfs(struct hnat_priv *h);
-extern int hnat_register_nf_hooks(void);
-extern void hnat_unregister_nf_hooks(void);
+//extern int hnat_register_nf_hooks(void);
+//extern void hnat_unregister_nf_hooks(void);
+extern int hnat_register_nf_hooks(struct net *net);
+extern void hnat_unregister_nf_hooks(struct net *net);
 

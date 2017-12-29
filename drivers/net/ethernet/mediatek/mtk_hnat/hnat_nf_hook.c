@@ -17,6 +17,7 @@
 #include <net/arp.h>
 #include <net/neighbour.h>
 #include <net/netfilter/nf_conntrack_helper.h>
+#include <net/net_namespace.h>
 
 #include "nf_hnat_mtk.h"
 #include "hnat.h"
@@ -277,6 +278,7 @@ static struct nf_hook_ops mtk_hnat_nf_ops[] __read_mostly = {
 	},
 };
 
+/*
 int hnat_register_nf_hooks(void)
 {
 	return nf_register_hooks(mtk_hnat_nf_ops,
@@ -286,5 +288,17 @@ int hnat_register_nf_hooks(void)
 void hnat_unregister_nf_hooks(void)
 {
 	nf_unregister_hooks(mtk_hnat_nf_ops,
+			    ARRAY_SIZE(mtk_hnat_nf_ops));
+}
+*/
+int hnat_register_nf_hooks(struct net *net)
+{
+	return nf_register_net_hooks(net,mtk_hnat_nf_ops,
+				 ARRAY_SIZE(mtk_hnat_nf_ops));
+}
+
+void hnat_unregister_nf_hooks(struct net *net)
+{
+	nf_unregister_net_hooks(net,mtk_hnat_nf_ops,
 			    ARRAY_SIZE(mtk_hnat_nf_ops));
 }
