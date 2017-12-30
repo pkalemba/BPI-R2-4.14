@@ -175,6 +175,22 @@ struct dsa_mall_tc_entry {
 
 
 struct dsa_port {
+	/* A CPU port is physically connected to a master device.
+	 * A user port exposed to userspace has a slave device.
+	 */
+	union {
+		struct net_device *master;
+		struct net_device *slave;
+	};
+
+	/* CPU port tagging operations used by master or slave devices */
+	const struct dsa_device_ops *tag_ops;
+
+	/* Copies for faster access in master receive hot path */
+	struct dsa_switch_tree *dst;
+	struct sk_buff *(*rcv)(struct sk_buff *skb, struct net_device *dev,
+			       struct packet_type *pt);
+
 	enum {
 		DSA_PORT_TYPE_UNUSED = 0,
 		DSA_PORT_TYPE_CPU,

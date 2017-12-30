@@ -605,6 +605,71 @@ static int dsa_dst_parse(struct dsa_switch_tree *dst)
 	return 0;
 }
 
+static int dsa_port_parse_user(struct dsa_port *dp, const char *name)
+{
+	if (!name)
+		name = "eth%d";
+
+	dp->type = DSA_PORT_TYPE_USER;
+	dp->name = name;
+
+	return 0;
+}
+
+static int dsa_port_parse_dsa(struct dsa_port *dp)
+{
+	dp->type = DSA_PORT_TYPE_DSA;
+
+	return 0;
+}
+
+static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master)
+{
+	struct dsa_switch *ds = dp->ds;
+	struct dsa_switch_tree *dst = ds->dst;
+	const struct dsa_device_ops *tag_ops;
+	enum dsa_tag_protocol tag_protocol;
+
+	tag_protocol = ds->ops->get_tag_protocol(ds, dp->index);
+	tag_ops = dsa_resolve_tag_protocol(tag_protocol);
+	if (IS_ERR(tag_ops)) {
+		dev_warn(ds->dev, "No tagger for this switch\n");
+		return PTR_ERR(tag_ops);
+	}
+
+	dp->type = DSA_PORT_TYPE_CPU;
+	dp->rcv = tag_ops->rcv;
+	dp->tag_ops = tag_ops;
+	dp->master = master;
+	dp->dst = dst;
+
+	return 0;
+}
+
+static int dsa_port_parse_of(struct dsa_port *dp, struct device_node *dn)
+{
+	struct device_node *ethernet = of_parse_phandle(dn, "ethernet", 0);
+	const char *name = of_get_property(dn, "label", NULL);
+	bool link = of_property_read_bool(dn, "link");
+
+	dp->dn = dn;
+
+	if (ethernet) {
+		struct net_device *master;
+
+		master = of_find_net_device_by_node(ethernet);
+		if (!master)
+			return -EPROBE_DEFER;
+
+		return dsa_port_parse_cpu(dp, master);
+	}
+
+	if (link)
+		return dsa_port_parse_dsa(dp);
+
+	return dsa_port_parse_user(dp, name);
+}
+
 static int dsa_parse_ports_dn(struct device_node *ports, struct dsa_switch *ds)
 {
 	struct device_node *port;
