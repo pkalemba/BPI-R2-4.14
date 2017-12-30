@@ -1,27 +1,27 @@
 drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
 drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
-drivers/net/dsa/mt7530.c: In function ‘mt7530_port_set_vlan_unware’:
-drivers/net/dsa/mt7530.c:825:3: error: implicit declaration of function ‘dsa_is_user_port’ [-Werror=implicit-function-declaration]
+drivers/net/dsa/mt7530.c: In function 'mt7530_port_set_vlan_unware':
+drivers/net/dsa/mt7530.c:825:3: error: implicit declaration of function 'dsa_is_user_port' [-Werror=implicit-function-declaration]
    if (dsa_is_user_port(ds, i) &&
    ^
-drivers/net/dsa/mt7530.c:837:9: error: implicit declaration of function ‘dsa_user_ports’ [-Werror=implicit-function-declaration]
+drivers/net/dsa/mt7530.c:837:9: error: implicit declaration of function 'dsa_user_ports' [-Werror=implicit-function-declaration]
          PCR_MATRIX(dsa_user_ports(priv->ds)));
          ^
-drivers/net/dsa/mt7530.c: In function ‘mt7530_port_bridge_leave’:
-drivers/net/dsa/mt7530.c:897:5: error: implicit declaration of function ‘dsa_to_port’ [-Werror=implicit-function-declaration]
+drivers/net/dsa/mt7530.c: In function 'mt7530_port_bridge_leave':
+drivers/net/dsa/mt7530.c:897:5: error: implicit declaration of function 'dsa_to_port' [-Werror=implicit-function-declaration]
      if (dsa_to_port(ds, i)->bridge_dev != bridge)
      ^
-drivers/net/dsa/mt7530.c:897:27: error: invalid type argument of ‘->’ (have ‘int’)
+drivers/net/dsa/mt7530.c:897:27: error: invalid type argument of '->' (have 'int')
      if (dsa_to_port(ds, i)->bridge_dev != bridge)
                            ^
-drivers/net/dsa/mt7530.c: In function ‘mt7530_port_vlan_add’:
-drivers/net/dsa/mt7530.c:1142:6: warning: unused variable ‘ret’ [-Wunused-variable]
+drivers/net/dsa/mt7530.c: In function 'mt7530_port_vlan_add':
+drivers/net/dsa/mt7530.c:1142:6: warning: unused variable 'ret' [-Wunused-variable]
   int ret;
       ^
 cc1: some warnings being treated as errors
-make[3]: *** [drivers/net/dsa/mt7530.o] Fehler 1
-make[2]: *** [drivers/net/dsa] Fehler 2
-make[2]: *** Auf noch nicht beendete Prozesse wird gewartet …
-make[1]: *** [drivers/net] Fehler 2
-make[1]: *** Auf noch nicht beendete Prozesse wird gewartet …
-make: *** [drivers] Fehler 2
+make[3]: *** [drivers/net/dsa/mt7530.o] Error 1
+make[2]: *** [drivers/net/dsa] Error 2
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [drivers/net] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make: *** [drivers] Error 2
