@@ -1,0 +1,7 @@
+drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
+drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
+drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
+drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
+WARNING: modpost: Found 1 section mismatch(es).
+To see full details build your kernel with:
+'make CONFIG_DEBUG_SECTION_MISMATCH=y'

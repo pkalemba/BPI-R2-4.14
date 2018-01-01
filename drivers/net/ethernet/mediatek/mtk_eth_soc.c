@@ -2019,6 +2019,9 @@ static int mtk_hw_init(struct mtk_eth *eth)
 		/* Enable RX checksum */
 		val |= MTK_GDMA_ICS_EN | MTK_GDMA_TCS_EN | MTK_GDMA_UCS_EN;
 
+        /* Enable special tag */
+        val |= BIT(24);
+
 		/* setup the mac dma */
 		mtk_w32(eth, val, MTK_GDMA_FWD_CFG(i));
 	}
