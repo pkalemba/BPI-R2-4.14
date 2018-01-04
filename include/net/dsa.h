@@ -337,7 +337,8 @@ struct dsa_switch_ops {
 				  struct device *host_dev, int sw_addr,
 				  void **priv);
 
-	enum dsa_tag_protocol (*get_tag_protocol)(struct dsa_switch *ds);
+	enum dsa_tag_protocol (*get_tag_protocol)(struct dsa_switch *ds,
+				  int port);
 
 	int	(*setup)(struct dsa_switch *ds);
 	int	(*set_addr)(struct dsa_switch *ds, u8 *addr);
