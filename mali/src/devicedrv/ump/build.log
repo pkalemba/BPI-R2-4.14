@@ -1,29 +1,11 @@
-In file included from ./include/linux/idr.h:16:0,
-                 from ./include/linux/kernfs.h:14,
-                 from ./include/linux/sysfs.h:16,
-                 from ./include/linux/kobject.h:21,
-                 from ./include/linux/device.h:17,
-                 from ./include/linux/dma-mapping.h:7,
-                 from /media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_kernel_memory_backend_os.c:20:
-/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_kernel_memory_backend_os.c: In function ‘os_allocate’:
-/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_kernel_memory_backend_os.c:136:54: error: ‘__GFP_REPEAT’ undeclared (first use in this function)
-    new_page = alloc_page(GFP_HIGHUSER | __GFP_ZERO | __GFP_REPEAT | __GFP_NOWARN);
-                                                      ^
-./include/linux/gfp.h:515:36: note: in definition of macro ‘alloc_pages’
-   alloc_pages_node(numa_node_id(), gfp_mask, order)
-                                    ^
-/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_kernel_memory_backend_os.c:136:15: note: in expansion of macro ‘alloc_page’
-    new_page = alloc_page(GFP_HIGHUSER | __GFP_ZERO | __GFP_REPEAT | __GFP_NOWARN);
+/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_osk_low_level_mem.c:58:1: warning: initialization from incompatible pointer type [enabled by default]
+ };
+ ^
+/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_osk_low_level_mem.c:58:1: warning: (near initialization for ‘ump_vm_ops.fault’) [enabled by default]
+/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_osk_low_level_mem.c: In function ‘ump_cpu_page_fault_handler’:
+/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_osk_low_level_mem.c:72:15: error: ‘struct vm_fault’ has no member named ‘virtual_address’
+  address = vmf->virtual_address;
                ^
-/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_kernel_memory_backend_os.c:136:54: note: each undeclared identifier is reported only once for each function it appears in
-    new_page = alloc_page(GFP_HIGHUSER | __GFP_ZERO | __GFP_REPEAT | __GFP_NOWARN);
-                                                      ^
-./include/linux/gfp.h:515:36: note: in definition of macro ‘alloc_pages’
-   alloc_pages_node(numa_node_id(), gfp_mask, order)
-                                    ^
-/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_kernel_memory_backend_os.c:136:15: note: in expansion of macro ‘alloc_page’
-    new_page = alloc_page(GFP_HIGHUSER | __GFP_ZERO | __GFP_REPEAT | __GFP_NOWARN);
-               ^
-make[2]: *** [/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_kernel_memory_backend_os.o] Fehler 1
+make[2]: *** [/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_osk_low_level_mem.o] Fehler 1
 make[1]: *** [_module_/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump] Fehler 2
 make: *** [all] Fehler 2
