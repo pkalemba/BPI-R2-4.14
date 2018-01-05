@@ -673,6 +673,7 @@ static int dsa_port_parse_of(struct dsa_port *dp, struct device_node *dn)
 static int dsa_parse_ports_dn(struct device_node *ports, struct dsa_switch *ds)
 {
 	struct device_node *port;
+	struct dsa_port *dp;
 	int err;
 	u32 reg;
 
@@ -684,7 +685,12 @@ static int dsa_parse_ports_dn(struct device_node *ports, struct dsa_switch *ds)
 		if (reg >= ds->num_ports)
 			return -EINVAL;
 
-		ds->ports[reg].dn = port;
+		//ds->ports[reg].dn = port;
+		dp = &ds->ports[reg];
+
+		err = dsa_port_parse_of(dp, port);
+		if (err)
+			return err;
 	}
 
 	return 0;
