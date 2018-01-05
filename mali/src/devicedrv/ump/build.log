@@ -2,10 +2,3 @@
  };
  ^
 /media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_osk_low_level_mem.c:58:1: warning: (near initialization for ‘ump_vm_ops.fault’) [enabled by default]
-/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_osk_low_level_mem.c: In function ‘ump_cpu_page_fault_handler’:
-/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_osk_low_level_mem.c:72:15: error: ‘struct vm_fault’ has no member named ‘virtual_address’
-  address = vmf->virtual_address;
-               ^
-make[2]: *** [/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump/linux/ump_osk_low_level_mem.o] Fehler 1
-make[1]: *** [_module_/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/ump] Fehler 2
-make: *** [all] Fehler 2
