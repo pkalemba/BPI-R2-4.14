@@ -17,7 +17,7 @@ then
   CFLAGS=-j$(grep ^processor /proc/cpuinfo  | wc -l)
   export INSTALL_MOD_PATH=$(dirname $(pwd))/mod/;export ARCH=arm;export CROSS_COMPILE=arm-linux-gnueabihf-
   if [[ ! -z ${#INSTALL_MOD_PATH}  ]]; then
-    rm -r $INSTALL_MOD_PATH/lib/modules
+    rm -r $INSTALL_MOD_PATH/lib/modules 2>/dev/null
     #echo $INSTALL_MOD_PATH
   fi
 
