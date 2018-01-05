@@ -1,22 +1,2 @@
 drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
 drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
-net/dsa/dsa2.c: In function 'dsa_cpu_parse':
-net/dsa/dsa2.c:519:2: error: too few arguments to function 'ds->ops->get_tag_protocol'
-  tag_protocol = ds->ops->get_tag_protocol(ds);
-  ^
-net/dsa/dsa2.c: At top level:
-net/dsa/dsa2.c:649:12: warning: 'dsa_port_parse_of' defined but not used [-Wunused-function]
- static int dsa_port_parse_of(struct dsa_port *dp, struct device_node *dn)
-            ^
-make[2]: *** [net/dsa/dsa2.o] Error 1
-make[2]: *** Waiting for unfinished jobs....
-make[1]: *** [net/dsa] Error 2
-make[1]: *** Waiting for unfinished jobs....
-make: *** [net] Error 2
-make: *** Waiting for unfinished jobs....
-drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
-drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
-drivers/net/dsa/mt7530.c: In function 'mt7530_port_vlan_add':
-drivers/net/dsa/mt7530.c:1142:6: warning: unused variable 'ret' [-Wunused-variable]
-  int ret;
-      ^

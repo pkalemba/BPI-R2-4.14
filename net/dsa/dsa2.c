@@ -516,7 +516,7 @@ static int dsa_cpu_parse(struct dsa_port *port, u32 index,
 	 */
 	ds->cpu_port_mask |= BIT(index);
 
-	tag_protocol = ds->ops->get_tag_protocol(ds);
+	tag_protocol = ds->ops->get_tag_protocol(ds, port->index);
 	dst->tag_ops = dsa_resolve_tag_protocol(tag_protocol);
 	if (IS_ERR(dst->tag_ops)) {
 		dev_warn(ds->dev, "No tagger for this switch\n");
