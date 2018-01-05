@@ -1,3 +1,10 @@
-Makefile:86: 
-make: *** Keine Regel vorhanden, um das Target »../ump/Module.symvers«, 
-  benötigt von »all«, zu erstellen.  Schluss.
+/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/mali/linux/mali_memory_swap_alloc.c: In function ‘mali_mem_swap_swapped_bkend_pool_shrink’:
+/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/mali/linux/mali_memory_swap_alloc.c:251:2: error: implicit declaration of function ‘global_page_state’ [-Werror=implicit-function-declaration]
+  system_free_size = global_page_state(NR_FREE_PAGES) * PAGE_SIZE;
+  ^
+/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/mali/linux/mali_memory_swap_alloc.c: At top level:
+cc1: warning: unrecognized command line option "-Wno-date-time" [enabled by default]
+cc1: some warnings being treated as errors
+make[2]: *** [/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/mali/linux/mali_memory_swap_alloc.o] Fehler 1
+make[1]: *** [_module_/media/data_ext/bpi-r2-kernel/github/mali/src/devicedrv/mali] Fehler 2
+make: *** [all] Fehler 2
