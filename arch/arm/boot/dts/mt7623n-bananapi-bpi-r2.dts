@@ -97,19 +97,13 @@
 		reg = <0 0x80000000 0 0x40000000>;
 	};
 
-	gpu@12300000 {
-		compatible = "arm,mali-450", "arm,mali-utgard";
-		reg = <0x12300000 0x30000>;
-		interrupts = <0 55 4>, <0 56 4>, <0 57 4>, <0 58 4>, <0 59 4>;
-		interrupt-names = "IRQGP", "IRQGPMMU", "IRQPP0", "IRQPPMMU0", "IRQPMU";
-
-		pmu_domain_config = <0x1 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x2 0x0 0x0>;
-		pmu_switch_delay = <0xff>;
-		clocks = <clock 122>, <clock 123>;
-		clock-names = "mali_parent", "mali";
-		vdd_g3d-supply = <regulator_Phandle>;
+	//for mali
+	vdd_fixed_vgpu_reg: fixedregulator@0 {
+		compatible = "regulator-fixed";
+		regulator-name = "vdd_fixed_vgpu";
+		regulator-min-microvolt = <1150000>;
+		regulator-max-microvolt = <1150000>;
 	};
-
 };
 
 &cir {
@@ -220,6 +214,11 @@
 	vmmc-supply = <&mt6323_vemc3v3_reg>;
 	vqmmc-supply = <&mt6323_vio18_reg>;
 	non-removable;
+};
+
+&mali {
+	vdd_g3d-supply = <&vdd_fixed_vgpu_reg>;
+	status = "okay";
 };
 
 &mmc1 {
