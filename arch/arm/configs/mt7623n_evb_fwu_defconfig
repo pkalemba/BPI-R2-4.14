@@ -1,4 +1,5 @@
 CONFIG_LOCALVERSION="-bpi-r2"
+CONFIG_LOCALVERSION_AUTO=n
 
 CONFIG_SYSVIPC=y
 CONFIG_IRQ_DOMAIN_DEBUG=y
@@ -264,12 +265,21 @@ CONFIG_NL80211_TESTMODE=y
 
 #internal Bluetooth (also not working yet)
 CONFIG_BT=y
-CONFIG_MTK_COMBO_BT=m
-CONFIG_MTK_COMBO_BT_HCI=m
+CONFIG_MTK_COMBO_BT=y
+CONFIG_MTK_COMBO_BT_HCI=y
 #to run bluetoothd rfkill needed
 CONFIG_RFKILL_LEDS=y
 CONFIG_RFKILL_INPUT=y
 CONFIG_RFKILL_GPIO=y
+#needed for BT?
+#Bluetooth Classic (BR/EDR) features 
+CONFIG_BT_BREDR=y
+#Bluetooth High Speed (HS) features
+CONFIG_BT_HS=y
+#Bluetooth Low Energy (LE) features
+CONFIG_BT_LE=y
+#Export Bluetooth internals in debugfs
+CONFIG_BT_DEBUGFS=y
 
 #if you use a mt76x2 or mt76x3 pcie-card
 CONFIG_MT76=m
