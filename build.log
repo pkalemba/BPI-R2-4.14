@@ -1,24 +1,27 @@
-drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
-drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
-net/dsa/dsa2.c: In function 'dsa_cpu_port_unapply':
-net/dsa/dsa2.c:265:6: error: 'ds' undeclared (first use in this function)
-  if (ds->ports[ports->index].ethernet) {
-      ^
-net/dsa/dsa2.c:265:6: note: each undeclared identifier is reported only once for each function it appears in
-net/dsa/dsa2.c:265:16: error: 'ports' undeclared (first use in this function)
-  if (ds->ports[ports->index].ethernet) {
-                ^
 net/dsa/dsa2.c: In function 'dsa_ds_parse':
-net/dsa/dsa2.c:577:4: warning: passing argument 1 of 'dsa_user_parse' from incompatible pointer type [enabled by default]
+net/dsa/dsa2.c:579:4: warning: passing argument 1 of 'dsa_user_parse' from incompatible pointer type [enabled by default]
     err = dsa_user_parse(port, index,  ds);
     ^
-net/dsa/dsa2.c:540:12: note: expected 'struct device_node *' but argument is of type 'struct dsa_port *'
+net/dsa/dsa2.c:542:12: note: expected 'struct device_node *' but argument is of type 'struct dsa_port *'
  static int dsa_user_parse(struct device_node *port, u32 index,
             ^
-make[2]: *** [net/dsa/dsa2.o] Error 1
+net/dsa/slave.c: In function 'dsa_slave_create':
+net/dsa/slave.c:1257:26: error: array subscript is not an integer
+  int port_cpu = ds->ports[port].upstream;
+                          ^
+net/dsa/slave.c:1264:13: error: 'struct dsa_switch' has no member named 'master_netdev'
+  else if (ds->master_netdev)
+             ^
+net/dsa/slave.c:1265:14: error: 'struct dsa_switch' has no member named 'master_netdev'
+   master = ds->master_netdev;
+              ^
+net/dsa/slave.c:1267:19: error: 'struct dsa_switch_tree' has no member named 'master_netdev'
+   master = ds->dst->master_netdev;
+                   ^
+make[2]: *** [net/dsa/slave.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
 make[1]: *** [net/dsa] Error 2
 make[1]: *** Waiting for unfinished jobs....
-make: *** [net] Error 2
-make: *** Waiting for unfinished jobs....
 drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
 drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
+make: *** [net] Error 2

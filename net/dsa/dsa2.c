@@ -258,13 +258,15 @@ static int dsa_cpu_port_apply(struct dsa_port *port)
 
 static void dsa_cpu_port_unapply(struct dsa_port *port)
 {
+	struct dsa_switch *ds = port->ds;
+
 	devlink_port_unregister(&port->devlink_port);
 	dsa_cpu_dsa_destroy(port);
 	port->ds->cpu_port_mask &= ~BIT(port->index);
 
-	if (ds->ports[ports->index].ethernet) {
-		dev_put(ds->ports[ports->index].ethernet);
-		ds->ports[ports->index].ethernet = NULL;
+	if (ds->ports[port->index].ethernet) {
+		dev_put(ds->ports[port->index].ethernet);
+		ds->ports[port->index].ethernet = NULL;
 	}
 }
 
