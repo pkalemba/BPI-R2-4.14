@@ -1,0 +1,29 @@
+patch -p1 < 0033-net-dsa-add-multi-gmac-support.patch 
+patching file drivers/net/dsa/mt7530.c
+Hunk #1 succeeded at 908 with fuzz 1 (offset -88 lines).
+patching file include/net/dsa.h
+Hunk #1 FAILED at 145.
+Hunk #2 FAILED at 205.
+Hunk #3 succeeded at 266 with fuzz 1 (offset 48 lines).
+Hunk #4 FAILED at 239.
+3 out of 4 hunks FAILED -- saving rejects to file include/net/dsa.h.rej
+patching file net/dsa/dsa2.c
+Reversed (or previously applied) patch detected!  Assume -R? [n] 
+Apply anyway? [n] 
+Skipping patch.
+4 out of 4 hunks ignored -- saving rejects to file net/dsa/dsa2.c.rej
+patching file net/dsa/dsa_priv.h
+Hunk #1 FAILED at 43.
+1 out of 1 hunk FAILED -- saving rejects to file net/dsa/dsa_priv.h.rej
+patching file net/dsa/slave.c
+Hunk #1 FAILED at 61.
+Hunk #2 FAILED at 96.
+Hunk #3 FAILED at 151.
+Hunk #4 FAILED at 178.
+Hunk #5 FAILED at 189.
+Hunk #6 FAILED at 198.
+Hunk #7 FAILED at 633.
+Hunk #8 FAILED at 945.
+Hunk #9 FAILED at 1233.
+Hunk #10 succeeded at 1295 with fuzz 2 (offset 32 lines).
+9 out of 10 hunks FAILED -- saving rejects to file net/dsa/slave.c.rej

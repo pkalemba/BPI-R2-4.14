@@ -1,0 +1,10 @@
+--- net/dsa/dsa_priv.h
++++ net/dsa/dsa_priv.h
+@@ -43,6 +43,7 @@
+ 	int			old_duplex;
+ 
+ 	struct net_device	*bridge_dev;
++	struct net_device	*master;
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ 	struct netpoll		*netpoll;
+ #endif
