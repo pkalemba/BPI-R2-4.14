@@ -84,6 +84,7 @@ struct dsa_slave_priv {
 	int			old_link;
 	int			old_pause;
 	int			old_duplex;
+	struct net_device	*master;
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	struct netpoll		*netpoll;
