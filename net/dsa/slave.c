@@ -1250,21 +1250,25 @@ int dsa_slave_create(struct dsa_port *port, const char *name)
 {
 	struct dsa_switch *ds = port->ds;
 	struct dsa_switch_tree *dst = ds->dst;
-	struct net_device *master;
+	//struct net_device *master;
 	struct net_device *slave_dev;
-	struct dsa_slave_priv *p;
+	//struct dsa_slave_priv *p;
+
+    struct dsa_slave_priv *p = netdev_priv(port->netdev);
+    struct net_device *master = dsa_master_netdev(p);
+
 	struct dsa_port *cpu_dp;
-	int port_cpu = ds->ports[port].upstream;
+	int port_cpu = ds->ports[port->index].upstream;
 	int ret;
 
 	cpu_dp = ds->dst->cpu_dp;
 	//master = cpu_dp->netdev;
 	if (port_cpu && ds->ports[port_cpu].ethernet)
 		master = ds->ports[port_cpu].ethernet;
-	else if (ds->master_netdev)
-		master = ds->master_netdev;
+	else if (p->master)
+		master = p->master;
 	else
-		master = ds->dst->master_netdev;
+		master = ds->dst->master;
 	master->dsa_ptr = (void *)ds->dst;
 
 
