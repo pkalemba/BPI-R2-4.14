@@ -1254,10 +1254,19 @@ int dsa_slave_create(struct dsa_port *port, const char *name)
 	struct net_device *slave_dev;
 	struct dsa_slave_priv *p;
 	struct dsa_port *cpu_dp;
+	int port_cpu = ds->ports[port].upstream;
 	int ret;
 
 	cpu_dp = ds->dst->cpu_dp;
-	master = cpu_dp->netdev;
+	//master = cpu_dp->netdev;
+	if (port_cpu && ds->ports[port_cpu].ethernet)
+		master = ds->ports[port_cpu].ethernet;
+	else if (ds->master_netdev)
+		master = ds->master_netdev;
+	else
+		master = ds->dst->master_netdev;
+	master->dsa_ptr = (void *)ds->dst;
+
 
 	if (!ds->num_tx_queues)
 		ds->num_tx_queues = 1;
