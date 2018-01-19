@@ -1,7 +1,17 @@
+.config:4497:warning: override: reassigning to symbol DEBUG_SECTION_MISMATCH
 drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
 drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
 drivers/misc/mediatek/connectivity/wlan/Makefile:6: include gen2
 drivers/misc/mediatek/connectivity/wlan/gen2/Makefile:220: y
-WARNING: modpost: Found 1 section mismatch(es).
-To see full details build your kernel with:
-'make CONFIG_DEBUG_SECTION_MISMATCH=y'
+WARNING: drivers/net/ethernet/mediatek/mtk_hnat/mtkhnat.o(.text+0x658): Section mismatch in reference from the function hnat_probe() to the function .init.text:hnat_init_debugfs()
+The function hnat_probe() references
+the function __init hnat_init_debugfs().
+This is often because hnat_probe lacks a __init 
+annotation or the annotation of hnat_init_debugfs is wrong.
+
+WARNING: drivers/net/ethernet/mediatek/mtk_hnat/mtkhnat.o(.text+0x658): Section mismatch in reference from the function hnat_probe() to the function .init.text:hnat_init_debugfs()
+The function hnat_probe() references
+the function __init hnat_init_debugfs().
+This is often because hnat_probe lacks a __init 
+annotation or the annotation of hnat_init_debugfs is wrong.
+
