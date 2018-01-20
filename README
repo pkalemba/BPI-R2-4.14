@@ -1,3 +1,11 @@
+Branch 4.9
+
+This Branch is only to apply patches from lede-repo
+( https://github.com/garywangcn/bpi-r2_lede/tree/bpi-r2-on-lede-v1 ) 
+and to compare with 4.14 for merging features
+
+compiling is not necessary
+
         Linux kernel release 4.x <http://kernel.org/>
 
 These are the release notes for Linux version 4.  Read them carefully,
