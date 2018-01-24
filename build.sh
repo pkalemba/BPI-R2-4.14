@@ -64,6 +64,11 @@ then
     git pull
   fi
 
+  if [[ "$action" == "defconfig" ]];
+  then
+    nano arch/arm/configs/mt7623n_evb_fwu_defconfig
+  fi
+
   if [[ "$action" == "importconfig" ]];
   then
 #    cp ../mt7623n_evb_bpi_defconfig arch/arm/configs/
@@ -105,7 +110,7 @@ then
         olddir=$(pwd)
         cd ../SD
         fname=bpi-r2_${kernver}_${gitbranch}.tar.gz
-        tar -czf $fname BPI-BOOT BPI-ROOT
+        tar -cz --owner=root --group=root -f $fname BPI-BOOT BPI-ROOT
 		md5sum $fname > $fname.md5
         ls -lh $(pwd)"/"$fname
         cd $olddir
