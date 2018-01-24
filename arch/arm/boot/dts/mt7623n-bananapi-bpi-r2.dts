@@ -97,12 +97,12 @@
 		reg = <0 0x80000000 0 0x40000000>;
 	};
 
-	/*vdd_fixed_vgpu_reg: fixedregulator@0 {
+	vdd_fixed_vgpu_reg: fixedregulator@0 {
 		compatible = "regulator-fixed";
 		regulator-name = "vdd_fixed_vgpu";
 		regulator-min-microvolt = <1150000>;
 		regulator-max-microvolt = <1150000>;
-	};*/
+	};
 };
 
 &cir {
@@ -210,10 +210,10 @@
 	status = "okay";
 };
 
-/*&mali {
+&mali {
 	vdd_g3d-supply = <&vdd_fixed_vgpu_reg>;
 	status = "okay";
-};*/
+};
 
 &mmc0 {
 	pinctrl-names = "default", "state_uhs";
@@ -497,7 +497,7 @@
 		};
 	};
 
-	/*mipi_dsi_pin: mipi_dsi_pin {
+	mipi_dsi_pin: mipi_dsi_pin {
                 pins_cmd_dat {
                       pinmux = <MT7623_PIN_100_MIPI_TDP0_FUNC_TDP0>,
                                <MT7623_PIN_99_MIPI_TDN0_FUNC_TDN0>,
@@ -507,7 +507,7 @@
                                <MT7623_PIN_95_MIPI_TCN_FUNC_TCN>;
                };
 
-	};*/
+	};
 };
 
 &pwm {
@@ -824,8 +824,8 @@
 	status = "okay";
 };
 
-/*&mipi_tx0 {
+&mipi_tx0 {
         pinctrl-names = "default";
         pinctrl-0 = <&mipi_dsi_pin>;
         status = "okay";
-};*/
+};
