@@ -88,6 +88,15 @@ struct dsa_platform_data {
 
 struct packet_type;
 
+struct dsa_device_ops {
+	struct sk_buff *(*xmit)(struct sk_buff *skb, struct net_device *dev);
+	int (*rcv)(struct sk_buff *skb, struct net_device *dev,
+			       struct packet_type *pt,
+			       struct net_device *orig_dev);
+	int (*flow_dissect)(const struct sk_buff *skb, __be16 *proto,
+			    int *offset);
+};
+
 struct dsa_switch_tree {
 	struct list_head	list;
 
@@ -145,6 +154,8 @@ struct dsa_port {
 	struct device_node	*dn;
 	unsigned int		ageing_time;
 	u8			stp_state;
+	struct net_device	*ethernet;
+	int			upstream;
 };
 
 struct dsa_switch {
@@ -205,7 +216,7 @@ struct dsa_switch {
 
 static inline bool dsa_is_cpu_port(struct dsa_switch *ds, int p)
 {
-	return !!(ds->index == ds->dst->cpu_switch && p == ds->dst->cpu_port);
+	return !!(ds->cpu_port_mask & (1 << p));
 }
 
 static inline bool dsa_is_dsa_port(struct dsa_switch *ds, int p)
@@ -216,6 +227,11 @@ static inline bool dsa_is_dsa_port(struct dsa_switch *ds, int p)
 static inline bool dsa_is_port_initialized(struct dsa_switch *ds, int p)
 {
 	return ds->enabled_port_mask & (1 << p) && ds->ports[p].netdev;
+}
+
+static inline bool dsa_is_upstream_port(struct dsa_switch *ds, int p)
+{
+	return dsa_is_cpu_port(ds, p) || dsa_is_dsa_port(ds, p);
 }
 
 static inline u8 dsa_upstream_port(struct dsa_switch *ds)
@@ -232,6 +248,18 @@ static inline u8 dsa_upstream_port(struct dsa_switch *ds)
 		return dst->cpu_port;
 	else
 		return ds->rtable[dst->cpu_switch];
+}
+
+static inline u8 dsa_port_upstream_port(struct dsa_switch *ds, int port)
+{
+	/*
+	 * If this port has a specific upstream cpu port, use it,
+	 * otherwise use the switch default.
+	 */
+	if (ds->ports[port].upstream)
+		return ds->ports[port].upstream;
+	else
+		return dsa_upstream_port(ds);
 }
 
 struct switchdev_trans;

@@ -35,7 +35,7 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
 	/* Build the tag after the MAC Source Address */
 	mtk_tag = skb->data + 2 * ETH_ALEN;
 	mtk_tag[0] = 0;
-	mtk_tag[1] = (1 << p->dp->index) & MTK_HDR_XMIT_DP_BIT_MASK;
+	mtk_tag[1] = (1 << p->port) & MTK_HDR_XMIT_DP_BIT_MASK;
 	mtk_tag[2] = 0;
 	mtk_tag[3] = 0;
 
@@ -111,7 +111,17 @@ out:
 	return 0;
 }
 
+static int mtk_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+				int *offset)
+{
+	*offset = 4;
+	*proto = ((__be16 *)skb->data)[1];
+
+	return 0;
+}
+
 const struct dsa_device_ops mtk_netdev_ops = {
-	.xmit	= mtk_tag_xmit,
-	.rcv	= mtk_tag_rcv,
+	.xmit		= mtk_tag_xmit,
+	.rcv		= mtk_tag_rcv,
+	.flow_dissect	= mtk_tag_flow_dissect,
 };
