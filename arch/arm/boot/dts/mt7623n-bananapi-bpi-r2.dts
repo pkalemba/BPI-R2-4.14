@@ -18,7 +18,7 @@
 	};
 */
 	memory {
-		reg = <0 0x80000000 0 0x20000000>;
+		reg = <0 0x80000000 0 0x80000000>;
 	};
 
 	aliases {
@@ -27,6 +27,7 @@
 
 	chosen {
 		stdout-path = "serial2:115200n8";
+		bootargs = "earlyprintk block2mtd.block2mtd=/dev/mmcblk0,65536,eMMC,5 mtdparts=eMMC:256k(mbr)ro,512k(uboot)ro,256k(config)ro,256k(factory)ro,32M(kernel),32M(recovery),1024M(rootfs),2048M(usrdata),-(bmtpool) rootfstype=squashfs,jffs2";
 	};
 
 	cpus {
@@ -45,6 +46,24 @@
 		cpu@3 {
 			proc-supply = <&mt6323_vproc_reg>;
 		};
+	};
+
+	fixedregulator3v3: regulator-3v3 {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+
+	fixedregulator5v: regulator-5v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-5V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
+		regulator-always-on;
 	};
 
 	gpio_keys {
@@ -72,20 +91,92 @@
 
 		blue {
 			label = "bpi-r2:pio:blue";
-			gpios = <&pio 241 GPIO_ACTIVE_HIGH>;
+			gpios = <&pio 240 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
 
 		green {
 			label = "bpi-r2:pio:green";
-			gpios = <&pio 240 GPIO_ACTIVE_HIGH>;
+			gpios = <&pio 241 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
 
 		red {
 			label = "bpi-r2:pio:red";
-			gpios = <&pio 239 GPIO_ACTIVE_HIGH>;
+			gpios = <&pio 239 GPIO_ACTIVE_LOW>;
 			default-state = "off";
+		};
+	};
+
+	switch {
+		compatible = "mediatek,mt7530";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+
+		dsa,mii-bus = <&mdio>;
+		pinctrl-names = "default";
+		reset-gpios = <&pio 33 0>;
+		core-supply = <&mt6323_vpa_reg>;
+		io-supply = <&mt6323_vemc3v3_reg>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+
+			port@0 {
+				reg = <0>;
+				label = "wan";
+				cpu = <&cpu_port1>;
+			};
+
+			port@1 {
+				reg = <1>;
+				label = "lan0";
+				cpu = <&cpu_port0>;
+			};
+
+			port@2 {
+				reg = <2>;
+				label = "lan1";
+				cpu = <&cpu_port0>;
+			};
+
+			port@3 {
+				reg = <3>;
+				label = "lan2";
+				cpu = <&cpu_port0>;
+			};
+
+			port@4 {
+				reg = <4>;
+				label = "lan3";
+				cpu = <&cpu_port0>;
+			};
+
+			cpu_port1: port@5 {
+				reg = <5>;
+				label = "cpu";
+				ethernet = <&gmac1>;
+				phy-mode = "trgmii";
+				fixed-link {
+					speed = <1000>;
+					full-duplex;
+				};
+			};
+
+			cpu_port0: port@6 {
+				reg = <6>;
+				label = "cpu";
+				ethernet = <&gmac0>;
+				phy-mode = "trgmii";
+
+				fixed-link {
+					speed = <1000>;
+					full-duplex;
+				};
+			};
 		};
 	};
 };
@@ -115,64 +206,22 @@
 		};
 	};
 
+	gmac1: mac@1 {
+		compatible = "mediatek,eth-mac";
+		reg = <1>;
+		phy-mode = "trgmii";
+
+		fixed-link {
+			speed = <1000>;
+			full-duplex;
+			pause;
+		};
+	};
+
 	mdio: mdio-bus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
-		switch@0 {
-			compatible = "mediatek,mt7530";
-			#address-cells = <1>;
-			#size-cells = <0>;
-			reg = <0>;
-			pinctrl-names = "default";
-			reset-gpios = <&pio 33 0>;
-			core-supply = <&mt6323_vpa_reg>;
-			io-supply = <&mt6323_vemc3v3_reg>;
-
-			ports {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				reg = <0>;
-
-				port@0 {
-					reg = <0>;
-					label = "wan";
-				};
-
-				port@1 {
-					reg = <1>;
-					label = "lan0";
-				};
-
-				port@2 {
-					reg = <2>;
-					label = "lan1";
-				};
-
-				port@3 {
-					reg = <3>;
-					label = "lan2";
-				};
-
-				port@4 {
-					reg = <4>;
-					label = "lan3";
-				};
-
-				port@6 {
-					reg = <6>;
-					label = "cpu";
-					ethernet = <&gmac0>;
-					phy-mode = "trgmii";
-
-					fixed-link {
-						speed = <1000>;
-						full-duplex;
-					};
-				};
-			};
 		};
-	};
 };
 
 &i2c0 {
@@ -211,6 +260,28 @@
 	cd-gpios = <&pio 261 0>;
 	vmmc-supply = <&mt6323_vmch_reg>;
 	vqmmc-supply = <&mt6323_vio18_reg>;
+};
+
+&pcie {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie_default>;
+	status = "okay";
+
+	pcie@0,0 {
+		status = "okay";
+	};
+
+	pcie@1,0 {
+		status = "okay";
+	};
+};
+
+&pcie0_phy {
+	status = "okay";
+};
+
+&pcie1_phy {
+	status = "okay";
 };
 
 &pio {
@@ -404,6 +475,14 @@
 		};
 	};
 
+	pcie_default: pcie_pin_default {
+		pins_cmd_dat {
+			pinmux = <MT7623_PIN_208_AUD_EXT_CK1_FUNC_PCIE0_PERST_N>,
+				 <MT7623_PIN_209_AUD_EXT_CK2_FUNC_PCIE1_PERST_N>;
+			bias-disable;
+		};
+	};
+
 	pwm_pins_a: pwm@0 {
 		pins_pwm {
 			pinmux = <MT7623_PIN_203_PWM0_FUNC_PWM0>,
@@ -496,12 +575,14 @@
 };
 
 &usb1 {
-	vusb33-supply = <&mt6323_vusb_reg>;
+	vusb33-supply = <&fixedregulator3v3>;
+	vbus-supply = <&fixedregulator5v>;
 	status = "okay";
 };
 
 &usb2 {
-	vusb33-supply = <&mt6323_vusb_reg>;
+	vusb33-supply = <&fixedregulator3v3>;
+	vbus-supply = <&fixedregulator5v>;
 	status = "okay";
 };
 
