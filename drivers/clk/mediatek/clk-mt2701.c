@@ -18,6 +18,7 @@
 
 #include "clk-mtk.h"
 #include "clk-gate.h"
+#include "clk-cpumux.h"
 
 #include <dt-bindings/clock/mt2701-clk.h>
 
@@ -465,6 +466,10 @@ static const char * const cpu_parents[] __initconst = {
 	"mmpll"
 };
 
+static const struct mtk_composite cpu_muxes[] __initconst = {
+	MUX(CLK_INFRA_CPUSEL, "infra_cpu_sel", cpu_parents, 0x0000, 2, 2),
+};
+
 static const struct mtk_composite top_muxes[] __initconst = {
 	MUX_GATE(CLK_TOP_AXI_SEL, "axi_sel", axi_parents,
 		0x0040, 0, 3, INVALID_MUX_GATE_BIT),
@@ -573,6 +578,20 @@ static const struct mtk_gate top_clks[] __initconst = {
 	GATE_TOP_AUD(CLK_TOP_AUD_I2S6_MCLK, "aud_i2s6_mclk", "aud_k6_src_div", 28),
 };
 
+static struct clk_onecell_data *mt7623_top_clk_data __initdata;
+static struct clk_onecell_data *mt7623_pll_clk_data __initdata;
+
+static void __init mtk_clk_enable_critical(void)
+{
+	if (!mt7623_top_clk_data || !mt7623_pll_clk_data)
+		return;
+
+	clk_prepare_enable(mt7623_pll_clk_data->clks[CLK_APMIXED_ARMPLL]);
+	clk_prepare_enable(mt7623_top_clk_data->clks[CLK_TOP_MEM_SEL]);
+	clk_prepare_enable(mt7623_top_clk_data->clks[CLK_TOP_DDRPHYCFG_SEL]);
+	clk_prepare_enable(mt7623_top_clk_data->clks[CLK_TOP_RTC_SEL]);
+}
+
 static void __init mtk_topckgen_init(struct device_node *node)
 {
 	struct clk_onecell_data *clk_data;
@@ -585,7 +604,7 @@ static void __init mtk_topckgen_init(struct device_node *node)
 		return;
 	}
 
-	clk_data = mtk_alloc_clk_data(CLK_TOP_NR);
+	mt7623_top_clk_data = clk_data = mtk_alloc_clk_data(CLK_TOP_NR);
 
 	mtk_clk_register_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks),
 								clk_data);
@@ -606,6 +625,8 @@ static void __init mtk_topckgen_init(struct device_node *node)
 	if (r)
 		pr_err("%s(): could not register clock provider: %d\n",
 			__func__, r);
+
+	mtk_clk_enable_critical();
 }
 CLK_OF_DECLARE(mtk_topckgen, "mediatek,mt2701-topckgen", mtk_topckgen_init);
 
@@ -659,6 +680,9 @@ static void __init mtk_infrasys_init(struct device_node *node)
 	mtk_clk_register_gates(node, infra_clks, ARRAY_SIZE(infra_clks),
 						clk_data);
 	mtk_clk_register_factors(infra_fixed_divs, ARRAY_SIZE(infra_fixed_divs),
+						clk_data);
+
+	mtk_clk_register_cpumuxes(node, cpu_muxes, ARRAY_SIZE(cpu_muxes),
 						clk_data);
 
 	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
@@ -1043,6 +1067,8 @@ static void __init mtk_ethsys_init(struct device_node *node)
 	if (r)
 		pr_err("%s(): could not register clock provider: %d\n",
 			__func__, r);
+
+	mtk_register_reset_controller(node, 1, 0x34);
 }
 CLK_OF_DECLARE(mtk_ethsys, "mediatek,mt2701-ethsys", mtk_ethsys_init);
 
@@ -1200,7 +1226,7 @@ static void __init mtk_apmixedsys_init(struct device_node *node)
 	struct clk_onecell_data *clk_data;
 	int r;
 
-	clk_data = mtk_alloc_clk_data(ARRAY_SIZE(apmixed_plls));
+	mt7623_pll_clk_data = clk_data = mtk_alloc_clk_data(ARRAY_SIZE(apmixed_plls));
 	if (!clk_data)
 		return;
 
@@ -1211,6 +1237,8 @@ static void __init mtk_apmixedsys_init(struct device_node *node)
 	if (r)
 		pr_err("%s(): could not register clock provider: %d\n",
 			__func__, r);
+
+	mtk_clk_enable_critical();
 }
 CLK_OF_DECLARE(mtk_apmixedsys, "mediatek,mt2701-apmixedsys",
 							mtk_apmixedsys_init);
