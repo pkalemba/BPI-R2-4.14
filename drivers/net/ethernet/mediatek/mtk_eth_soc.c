@@ -462,8 +462,8 @@ static void mtk_stats_update(struct mtk_eth *eth)
 	}
 }
 
-static struct rtnl_link_stats64 *mtk_get_stats64(struct net_device *dev,
-					struct rtnl_link_stats64 *storage)
+static struct rtnl_link_stats64 * mtk_get_stats64(struct net_device *dev,
+			    struct rtnl_link_stats64 *storage)
 {
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_hw_stats *hw_stats = mac->hw_stats;
@@ -615,7 +615,7 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
 	struct mtk_tx_dma *itxd, *txd;
-	struct mtk_tx_buf *tx_buf;
+	struct mtk_tx_buf *itx_buf, *tx_buf;
 	dma_addr_t mapped_addr;
 	unsigned int nr_frags;
 	int i, n_desc = 1;
@@ -629,8 +629,8 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
 	fport = (mac->id + 1) << TX_DMA_FPORT_SHIFT;
 	txd4 |= fport;
 
-	tx_buf = mtk_desc_to_tx_buf(ring, itxd);
-	memset(tx_buf, 0, sizeof(*tx_buf));
+	itx_buf = mtk_desc_to_tx_buf(ring, itxd);
+	memset(itx_buf, 0, sizeof(*itx_buf));
 
 	if (gso)
 		txd4 |= TX_DMA_TSO;
@@ -649,9 +649,11 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
 		return -ENOMEM;
 
 	WRITE_ONCE(itxd->txd1, mapped_addr);
-	tx_buf->flags |= MTK_TX_FLAGS_SINGLE0;
-	dma_unmap_addr_set(tx_buf, dma_addr0, mapped_addr);
-	dma_unmap_len_set(tx_buf, dma_len0, skb_headlen(skb));
+	itx_buf->flags |= MTK_TX_FLAGS_SINGLE0;
+	itx_buf->flags |= (!mac->id) ? MTK_TX_FLAGS_FPORT0 :
+			  MTK_TX_FLAGS_FPORT1;
+	dma_unmap_addr_set(itx_buf, dma_addr0, mapped_addr);
+	dma_unmap_len_set(itx_buf, dma_len0, skb_headlen(skb));
 
 	/* TX SG offload */
 	txd = itxd;
@@ -687,11 +689,13 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
 					       last_frag * TX_DMA_LS0));
 			WRITE_ONCE(txd->txd4, fport);
 
-			tx_buf->skb = (struct sk_buff *)MTK_DMA_DUMMY_DESC;
 			tx_buf = mtk_desc_to_tx_buf(ring, txd);
 			memset(tx_buf, 0, sizeof(*tx_buf));
-
+			tx_buf->skb = (struct sk_buff *)MTK_DMA_DUMMY_DESC;
 			tx_buf->flags |= MTK_TX_FLAGS_PAGE0;
+			tx_buf->flags |= (!mac->id) ? MTK_TX_FLAGS_FPORT0 :
+					 MTK_TX_FLAGS_FPORT1;
+
 			dma_unmap_addr_set(tx_buf, dma_addr0, mapped_addr);
 			dma_unmap_len_set(tx_buf, dma_len0, frag_map_size);
 			frag_size -= frag_map_size;
@@ -700,13 +704,22 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
 	}
 
 	/* store skb to cleanup */
-	tx_buf->skb = skb;
+	itx_buf->skb = skb;
 
 	WRITE_ONCE(itxd->txd4, txd4);
 	WRITE_ONCE(itxd->txd3, (TX_DMA_SWC | TX_DMA_PLEN0(skb_headlen(skb)) |
 				(!nr_frags * TX_DMA_LS0)));
 
-	netdev_sent_queue(dev, skb->len);
+	/* we have a single DMA ring so BQL needs to be updated for all devices
+	 * sitting on this ring
+	 */
+	for (i = 0; i < MTK_MAC_COUNT; i++) {
+		if (!eth->netdev[i])
+			continue;
+
+		netdev_sent_queue(eth->netdev[i], skb->len);
+	}
+
 	skb_tx_timestamp(skb);
 
 	ring->next_free = mtk_qdma_phys_to_virt(ring, txd->txd2);
@@ -845,7 +858,7 @@ static int mtk_start_xmit(struct sk_buff *skb, struct net_device *dev)
 drop:
 	spin_unlock(&eth->page_lock);
 	stats->tx_dropped++;
-	dev_kfree_skb(skb);
+	dev_kfree_skb_any(skb);
 	return NETDEV_TX_OK;
 }
 
@@ -998,33 +1011,29 @@ static int mtk_poll_tx(struct mtk_eth *eth, int budget)
 	struct mtk_tx_dma *desc;
 	struct sk_buff *skb;
 	struct mtk_tx_buf *tx_buf;
-	unsigned int done[MTK_MAX_DEVS];
-	unsigned int bytes[MTK_MAX_DEVS];
+	int total = 0, done = 0;
+	unsigned int bytes = 0;
 	u32 cpu, dma;
 	static int condition;
-	int total = 0, i;
-
-	memset(done, 0, sizeof(done));
-	memset(bytes, 0, sizeof(bytes));
+	int i;
 
 	cpu = mtk_r32(eth, MTK_QTX_CRX_PTR);
 	dma = mtk_r32(eth, MTK_QTX_DRX_PTR);
 
 	desc = mtk_qdma_phys_to_virt(ring, cpu);
 
-	while ((cpu != dma) && budget) {
+	while ((cpu != dma) && done < budget) {
 		u32 next_cpu = desc->txd2;
-		int mac;
+		int mac = 0;
 
 		desc = mtk_qdma_phys_to_virt(ring, desc->txd2);
 		if ((desc->txd3 & TX_DMA_OWNER_CPU) == 0)
 			break;
 
-		mac = (desc->txd4 >> TX_DMA_FPORT_SHIFT) &
-		       TX_DMA_FPORT_MASK;
-		mac--;
-
 		tx_buf = mtk_desc_to_tx_buf(ring, desc);
+		if (tx_buf->flags & MTK_TX_FLAGS_FPORT1)
+			mac = 1;
+
 		skb = tx_buf->skb;
 		if (!skb) {
 			condition = 1;
@@ -1032,9 +1041,8 @@ static int mtk_poll_tx(struct mtk_eth *eth, int budget)
 		}
 
 		if (skb != (struct sk_buff *)MTK_DMA_DUMMY_DESC) {
-			bytes[mac] += skb->len;
-			done[mac]++;
-			budget--;
+			bytes += skb->len;
+			done++;
 		}
 		mtk_tx_unmap(eth, tx_buf);
 
@@ -1046,11 +1054,13 @@ static int mtk_poll_tx(struct mtk_eth *eth, int budget)
 
 	mtk_w32(eth, cpu, MTK_QTX_CRX_PTR);
 
+	/* we have a single DMA ring so BQL needs to be updated for all devices
+	 * sitting on this ring
+	 */
 	for (i = 0; i < MTK_MAC_COUNT; i++) {
-		if (!eth->netdev[i] || !done[i])
+		if (!eth->netdev[i])
 			continue;
-		netdev_completed_queue(eth->netdev[i], done[i], bytes[i]);
-		total += done[i];
+		netdev_completed_queue(eth->netdev[i], done, bytes);
 	}
 
 	if (mtk_queue_stopped(eth) &&
@@ -1848,6 +1858,18 @@ static int mtk_hw_init(struct mtk_eth *eth)
 	/* GE2, Force 1000M/FD, FC ON */
 	mtk_w32(eth, MAC_MCR_FIXED_LINK, MTK_MAC_MCR(1));
 
+	/* Indicates CDM to parse the MTK special tag from CPU
+	 * which also is working out for untag packets.
+	 */
+	val = mtk_r32(eth, MTK_CDMQ_IG_CTRL);
+	mtk_w32(eth, val | MTK_CDMQ_STAG_EN, MTK_CDMQ_IG_CTRL);
+
+	/* Indicates CDM to parse the MTK special tag from CPU
+	 * which also is working out for untag packets.
+	 */
+	val = mtk_r32(eth, MTK_CDMQ_IG_CTRL);
+	mtk_w32(eth, val | MTK_CDMQ_STAG_EN, MTK_CDMQ_IG_CTRL);
+
 	/* Enable RX VLan Offloading */
 	mtk_w32(eth, 1, MTK_CDMP_EG_CTRL);
 
@@ -1910,10 +1932,9 @@ static int __init mtk_init(struct net_device *dev)
 
 	/* If the mac address is invalid, use random mac address  */
 	if (!is_valid_ether_addr(dev->dev_addr)) {
-		random_ether_addr(dev->dev_addr);
+		eth_hw_addr_random(dev);
 		dev_err(eth->dev, "generated random MAC address %pM\n",
 			dev->dev_addr);
-		dev->addr_assign_type = NET_ADDR_RANDOM;
 	}
 
 	return mtk_phy_connect(dev);
@@ -2247,7 +2268,6 @@ static const struct net_device_ops mtk_netdev_ops = {
 	.ndo_set_mac_address	= mtk_set_mac_address,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_do_ioctl		= mtk_do_ioctl,
-	.ndo_change_mtu		= eth_change_mtu,
 	.ndo_tx_timeout		= mtk_tx_timeout,
 	.ndo_get_stats64        = mtk_get_stats64,
 	.ndo_fix_features	= mtk_fix_features,
@@ -2320,6 +2340,8 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 	eth->netdev[id]->ethtool_ops = &mtk_ethtool_ops;
 
 	eth->netdev[id]->irq = eth->irq[0];
+	eth->netdev[id]->dev.of_node = np;
+
 	return 0;
 
 free_netdev:
