@@ -12,6 +12,8 @@
  *   Copyright (C) 2013-2016 Michael Lee <igvtee@gmail.com>
  */
 
+#define MTK_IRQ_DLY
+
 #ifndef MTK_ETH_H
 #define MTK_ETH_H
 
@@ -75,6 +77,10 @@
 /* CDMP Ingress Control Register */
 #define MTK_CDMQ_IG_CTRL	0x1400
 #define MTK_CDMQ_STAG_EN	BIT(0)
+
+/* CDMP Ingress Control Register */
+#define MTK_CDMP_IG_CTRL	0x400
+#define MTK_CDMP_STAG_EN	BIT(0)
 
 /* CDMP Exgress Control Register */
 #define MTK_CDMP_EG_CTRL	0x404
@@ -216,11 +222,15 @@
 #define MTK_TX_DONE_INT2	BIT(2)
 #define MTK_TX_DONE_INT1	BIT(1)
 #define MTK_TX_DONE_INT0	BIT(0)
+#ifdef MTK_IRQ_DLY
+#define MTK_RX_DONE_INT		BIT(30)
+#define MTK_TX_DONE_INT		BIT(28)
+#else
 #define MTK_RX_DONE_INT		(MTK_RX_DONE_INT0 | MTK_RX_DONE_INT1 | \
 				 MTK_RX_DONE_INT2 | MTK_RX_DONE_INT3)
 #define MTK_TX_DONE_INT		(MTK_TX_DONE_INT0 | MTK_TX_DONE_INT1 | \
 				 MTK_TX_DONE_INT2 | MTK_TX_DONE_INT3)
-
+#endif
 /* QDMA Interrupt grouping registers */
 #define MTK_QDMA_INT_GRP1	0x1a20
 #define MTK_QDMA_INT_GRP2	0x1a24
@@ -284,6 +294,7 @@
 
 /* QDMA descriptor rxd4 */
 #define RX_DMA_L4_VALID		BIT(24)
+#define RX_DMA_SP_TAG		BIT(22)
 #define RX_DMA_FPORT_SHIFT	19
 #define RX_DMA_FPORT_MASK	0x7
 
@@ -515,6 +526,8 @@ struct mtk_rx_ring {
  * @dev:		The device pointer
  * @base:		The mapped register i/o base
  * @page_lock:		Make sure that register operations are atomic
+ * @tx_irq__lock:	Make sure that IRQ register operations are atomic
+ * @rx_irq__lock:	Make sure that IRQ register operations are atomic
  * @dummy_dev:		we run 2 netdevs on 1 physical DMA ring and need a
  *			dummy for NAPI to work
  * @netdev:		The netdev instances
@@ -544,7 +557,8 @@ struct mtk_eth {
 	struct device			*dev;
 	void __iomem			*base;
 	spinlock_t			page_lock;
-	spinlock_t			irq_lock;
+	spinlock_t			tx_irq_lock;
+	spinlock_t			rx_irq_lock;
 	struct net_device		dummy_dev;
 	struct net_device		*netdev[MTK_MAX_DEVS];
 	struct mtk_mac			*mac[MTK_MAX_DEVS];
