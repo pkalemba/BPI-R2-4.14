@@ -41,7 +41,6 @@
 *.xz
 Module.symvers
 modules.builtin
-
 #
 # Top-level generic files
 #
@@ -54,7 +53,9 @@ modules.builtin
 /vmlinuz
 /System.map
 /Module.markers
-
+build.log
+uImage
+uboot/
 #
 # RPM spec file (make rpm-pkg)
 #
@@ -127,3 +128,6 @@ all.config
 
 # Kdevelop4
 *.kdev4
+
+arch/arm/boot/zImage-dtb
+tools/spi/include/

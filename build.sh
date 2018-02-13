@@ -15,6 +15,8 @@ then
   crosscompile=1
 fi;
 if [[ -z "$(which mkimage)" ]];then echo "please install u-boot-tools";exit 1;fi
+if [[ -z "$(which bison)" ]];then echo "please install bison";exit 1;fi
+if [[ -z "$(which flex)" ]];then echo "please install flex";exit 1;fi
 
 function prepare_SD
 {
@@ -106,7 +108,7 @@ then
     if [[ $ret == 0 ]];
     then
       cat arch/arm/boot/zImage arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb > arch/arm/boot/zImage-dtb
-      mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 -n "Linux Kernel $kernver-$gitbranch" -d arch/arm/boot/zImage-dtb ./uImage
+      mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 -n "Linux $kernver-$gitbranch" -d arch/arm/boot/zImage-dtb ./uImage
       echo "==========================================="
       echo "1) pack"
       if [[ $crosscompile -eq 0 ]];then
