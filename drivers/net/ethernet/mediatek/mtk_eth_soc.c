@@ -1998,6 +1998,7 @@ static int mtk_hw_init(struct mtk_eth *eth)
 
 	/* enable interrupt delay for RX */
 	mtk_w32(eth, MTK_PDMA_DELAY_RX_DELAY, MTK_PDMA_DELAY_INT);
+	//mtk_w32(eth, MTK_PDMA_DELAY_RX_DELAY, MTK_QDMA_DELAY_INT);
 
 	/* disable delay and normal interrupt */
 	mtk_w32(eth, 0, MTK_QDMA_DELAY_INT);
