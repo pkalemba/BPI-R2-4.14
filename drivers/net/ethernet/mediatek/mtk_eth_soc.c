@@ -80,7 +80,10 @@ static int mtk_mdio_busy_wait(struct mtk_eth *eth)
 			return 0;
 		if (time_after(jiffies, t_start + PHY_IAC_TIMEOUT))
 			break;
-		usleep_range(10, 20);
+		if (in_atomic())
+			udelay(10);
+		else
+			usleep_range(10, 20);
 	}
 
 	dev_err(eth->dev, "mdio: MDIO timeout\n");
