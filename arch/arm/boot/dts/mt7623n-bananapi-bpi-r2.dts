@@ -547,6 +547,13 @@
 				 <MT7623_PIN_82_UTXD1_FUNC_UTXD1>;
 		};
 	};
+
+	uart2_pins_a: uart@2 {
+		pins_dat {
+			pinmux = <MT7623_PIN_14_GPIO14_FUNC_URXD2>,
+				 <MT7623_PIN_15_GPIO15_FUNC_UTXD2>;
+		};
+	};
 };
 
 &pwm {
@@ -833,6 +840,8 @@
 };
 
 &uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2_pins_a>;
 	status = "okay";
 };
 
