@@ -130,6 +130,7 @@ bool __skb_flow_dissect(const struct sk_buff *skb,
 			 skb->vlan_proto : skb->protocol;
 		nhoff = skb_network_offset(skb);
 		hlen = skb_headlen(skb);
+#if IS_ENABLED(CONFIG_NET_DSA)
 		if (unlikely(netdev_uses_dsa(skb->dev))) {
 			const struct dsa_device_ops *ops;
 			int offset;
@@ -141,6 +142,7 @@ bool __skb_flow_dissect(const struct sk_buff *skb,
 				nhoff += offset;
 			}
 		}
+#endif
 	}
 
 	/* It is ensured by skb_flow_dissector_init() that control key will
