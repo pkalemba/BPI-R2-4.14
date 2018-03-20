@@ -26,13 +26,13 @@ case $1 in
   ;;
 "clean")
   make clean
-  cd cryptodev-linux
+  cd cryptodev-linux-1.9
   make clean && cd -
   cd DX910-SW-99002-r8p1-00rel0/driver/src/devicedrv/mali/
   make clean && cd -
   ;;
 "cryptodev")
-  cd cryptodev-linux
+  cd cryptodev-linux-1.9
   make KERNEL_DIR=${KDIR}
   ;;
 "mali")
