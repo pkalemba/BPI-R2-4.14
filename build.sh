@@ -48,14 +48,14 @@ case $1 in
   make ${CFLAGS}
   if [[ $? -eq 0 ]];then
     cat arch/arm/boot/zImage arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb > arch/arm/boot/zImage-dtb
-    mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 -n "Linux Kernel 4.9" -d arch/arm/boot/zImage-dtb ./uImage
+    mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 -n "Linux Kernel $kernver" -d arch/arm/boot/zImage-dtb ./uImage
     make modules_install
   fi
   ;;
 *)
 echo "This tool support following building command:"
 echo "--------------------------------------------------------------------------------"
-echo "  importconfig, import default configt and kernel and pack to download images."
+echo "  importconfig, import default config."
 echo "  config, kernel configure."
 echo "  clean, clean all build."
 echo "  cryptodev, build cryptodev kernel module."
