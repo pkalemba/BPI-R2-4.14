@@ -110,6 +110,8 @@ source "drivers/gpu/drm/i2c/Kconfig"
 
 source "drivers/gpu/drm/arm/Kconfig"
 
+source "drivers/gpu/drm/mali/Kconfig"
+
 config DRM_RADEON
 	tristate "ATI Radeon"
 	depends on DRM && PCI
