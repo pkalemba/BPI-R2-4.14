@@ -44,6 +44,15 @@ case $1 in
   sudo cp -r mod/lib/modules/4.9.44-bpi-r2+ /media/$USER/BPI-ROOT/lib/modules/
   sync
 ;;
+"pack")
+  mkdir -p SD
+  mkdir -p SD/BPI-BOOT/bananapi/bpi-r2/linux/
+  cp uImage SD/BPI-BOOT/bananapi/bpi-r2/linux/
+  mkdir -p SD/BPI-ROOT/lib/modules/
+  cp -r mod/lib/modules/4.9.44-bpi-r2+ SD/BPI-ROOT/lib/modules/
+  filename=bpi-r2-4.9.tar.gz
+  (cd SD; tar -czf $filename BPI-BOOT BPI-ROOT;md5sum $filename > $filename.md5
+;;
 "build")
   make ${CFLAGS}
   if [[ $? -eq 0 ]];then
@@ -61,6 +70,7 @@ echo "  clean, clean all build."
 echo "  cryptodev, build cryptodev kernel module."
 echo "  mali, build mali kernel module."
 echo "  install, copy kernel image and module into a mount SD"
+echo "  pack, create tar-archive with kernel-image and modules"
 echo "  build, build kernel image and module, cryptodev, mali"
 echo "--------------------------------------------------------------------------------"
   ;;
