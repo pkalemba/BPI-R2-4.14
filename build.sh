@@ -32,26 +32,30 @@ case $1 in
   make clean && cd -
   ;;
 "cryptodev")
+  echo "cryptodev"
   cd cryptodev-linux-1.9
   make KERNEL_DIR=${KDIR}
   ;;
 "mali")
+  echo "mali"
   cd DX910-SW-99002-r8p1-00rel0/driver/src/devicedrv/mali/
   KDIR=${KDIR} USING_UMP=0 BUILD=release make
   ;;
 "install")
+  echo "install"
   cp uImage /media/$USER/BPI-BOOT/bananapi/bpi-r2/linux/
   sudo cp -r mod/lib/modules/4.9.44-bpi-r2+ /media/$USER/BPI-ROOT/lib/modules/
   sync
 ;;
 "pack")
+  echo "pack"
   mkdir -p SD
   mkdir -p SD/BPI-BOOT/bananapi/bpi-r2/linux/
   cp uImage SD/BPI-BOOT/bananapi/bpi-r2/linux/
   mkdir -p SD/BPI-ROOT/lib/modules/
   cp -r mod/lib/modules/4.9.44-bpi-r2+ SD/BPI-ROOT/lib/modules/
   filename=bpi-r2-4.9.tar.gz
-  (cd SD; tar -czf $filename BPI-BOOT BPI-ROOT;md5sum $filename > $filename.md5
+  (cd SD; tar -czf $filename BPI-BOOT BPI-ROOT;md5sum $filename > $filename.md5;ls -lh $filename)
 ;;
 "build")
   make ${CFLAGS}
