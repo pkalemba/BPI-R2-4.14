@@ -35,11 +35,27 @@ case $1 in
   echo "cryptodev"
   cd cryptodev-linux-1.9
   make KERNEL_DIR=${KDIR}
+  cd tests
+  export CFLAGS=-I$(pwd)/openssl-1.1.0f/include/
+  export LDLIBS=-L$(pwd)/openssl-cryptodev/lib/
+  make CC=arm-linux-gnueabihf-gcc
+  ;;
+"openssl")
+  echo openssl
+  apt-get source openssl
+  cd openssl-1.1.0f
+  sed -i 's/\tdh_shlibdeps/dh_shlibdeps -l\/usr\/arm-linux-gnueabihf\/lib:$(pwd)\/debian\/libssl1.1\/usr\/lib\/arm-linux-gnueabihf/' debian/rules
+  LANG=C ARCH=arm DEB_BUILD_OPTIONS=nocheck CROSS_COMPILE=arm-linux-gnueabihf- \
+	DEB_CFLAGS_APPEND='-DHAVE_CRYPTODEV -DUSE_CRYPTODEV_DIGESTS' \
+	DEB_CPPFLAGS_APPEND="-I$(pwd)/../cryptodev-linux-1.9" \
+	dpkg-buildpackage -us -uc -aarmhf
   ;;
 "mali")
   echo "mali"
   cd DX910-SW-99002-r8p1-00rel0/driver/src/devicedrv/mali/
   KDIR=${KDIR} USING_UMP=0 BUILD=release make
+  cd - && cd DX910-SW-99002-r8p1-00rel0/driver/src/egl/x11/drm_module/mali_drm/
+  KDIR=${KDIR} make
   ;;
 "install")
   echo "install"
@@ -57,7 +73,7 @@ case $1 in
   filename=bpi-r2-4.9.tar.gz
   (cd SD; tar -czf $filename BPI-BOOT BPI-ROOT;md5sum $filename > $filename.md5;ls -lh $filename)
 ;;
-"build")
+"kernel")
   make ${CFLAGS}
   if [[ $? -eq 0 ]];then
     cat arch/arm/boot/zImage arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb > arch/arm/boot/zImage-dtb
@@ -72,10 +88,11 @@ echo "  importconfig, import default config."
 echo "  config, kernel configure."
 echo "  clean, clean all build."
 echo "  cryptodev, build cryptodev kernel module."
+echo "  openssl, build openssl with cryptodev kernel engine."
 echo "  mali, build mali kernel module."
 echo "  install, copy kernel image and module into a mount SD"
 echo "  pack, create tar-archive with kernel-image and modules"
-echo "  build, build kernel image and module, cryptodev, mali"
+echo "  kernel, build kernel image and module, cryptodev, mali"
 echo "--------------------------------------------------------------------------------"
   ;;
 esac
