@@ -24,8 +24,8 @@ enum ctx_type {
 };
 
 union openssl_ctx {
-	HMAC_CTX hmac;
-	EVP_MD_CTX md;
+	HMAC_CTX *hmac;
+	EVP_MD_CTX *md;
 };
 
 struct ctx_mapping {
@@ -65,11 +65,11 @@ static void remove_mapping(__u32 ses)
 		break;
 	case ctx_type_hmac:
 		dbgp("%s: calling HMAC_CTX_cleanup\n", __func__);
-		HMAC_CTX_cleanup(&mapping->ctx.hmac);
+		HMAC_CTX_free(mapping->ctx.hmac);
 		break;
 	case ctx_type_md:
 		dbgp("%s: calling EVP_MD_CTX_cleanup\n", __func__);
-		EVP_MD_CTX_cleanup(&mapping->ctx.md);
+		EVP_MD_CTX_free(mapping->ctx.md);
 		break;
 	}
 	memset(mapping, 0, sizeof(*mapping));
@@ -127,10 +127,10 @@ static int openssl_hmac(struct session_op *sess, struct crypt_op *cop)
 
 		mapping->ses = sess->ses;
 		mapping->type = ctx_type_hmac;
-		ctx = &mapping->ctx.hmac;
+		ctx = mapping->ctx.hmac;
 
-		dbgp("calling HMAC_CTX_init");
-		HMAC_CTX_init(ctx);
+		dbgp("calling HMAC_CTX_new");
+		ctx = HMAC_CTX_new();
 		dbgp("calling HMAC_Init_ex");
 		if (!HMAC_Init_ex(ctx, sess->mackey, sess->mackeylen,
 				sess_to_evp_md(sess), NULL)) {
@@ -172,10 +172,10 @@ static int openssl_md(struct session_op *sess, struct crypt_op *cop)
 
 		mapping->ses = sess->ses;
 		mapping->type = ctx_type_md;
-		ctx = &mapping->ctx.md;
+		ctx = mapping->ctx.md;
 
-		dbgp("calling EVP_MD_CTX_init");
-		EVP_MD_CTX_init(ctx);
+		dbgp("calling EVP_MD_CTX_new");
+		ctx = EVP_MD_CTX_new();
 		dbgp("calling EVP_DigestInit");
 		EVP_DigestInit(ctx, sess_to_evp_md(sess));
 	}
