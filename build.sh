@@ -12,7 +12,6 @@ gitrev=$(git rev-parse --short --verify $gitbranch)
 gittag=$(git describe 2>/dev/null | awk -F- '{printf("-%05d-%s", $(NF-1),$(NF))}')
 ver=${kernver}-${gitbranch}${gittag}
 export LOCALVERSION="-${gitbranch}"
-
 export KDIR=$(pwd)
 
 case $1 in
@@ -34,12 +33,12 @@ case $1 in
   ;;
 "cryptodev")
   echo "cryptodev"
+  export CFLAGS=-I${KDIR}/openssl-1.1.0f/debian/tmp/usr/include/arm-linux-gnueabihf
+  export LDFLAGS+=' -L${KDIR}/openssl-1.1.0f/debian/tmp/usr/lib/arm-linux-gnueabihf'
   cd cryptodev-linux-1.9
   make KERNEL_DIR=${KDIR}
   cd tests
-  export CFLAGS=-I$(pwd)/openssl-1.1.0f/include/
-  export LDLIBS=-L$(pwd)/openssl-cryptodev/lib/
-  make CC=arm-linux-gnueabihf-gcc
+  make CC=arm-linux-gnueabihf-gcc ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
   ;;
 "openssl")
   echo openssl
@@ -79,14 +78,21 @@ case $1 in
   # uImage_4.9.44-4.9_patched-00030-g328e50a6cb09
   mkdir -p debian/bananapi-r2-image/boot/bananapi/bpi-r2/linux/
   mkdir -p debian/bananapi-r2-image/lib/modules/
-  if test -e ./uImage; then
+  if test -e ./uImage && test -d mod/lib/modules/${ver}; then
      fakeroot cp ./uImage debian/bananapi-r2-image/boot/bananapi/bpi-r2/linux/uImage_${ver}
      fakeroot cp -r mod/lib/modules/${ver} debian/bananapi-r2-image/lib/modules/
-     #chown -R root: debian/bananapi-r2-image/*
-     cd debian && fakeroot dpkg-deb --build bananapi-r2-image bananapi-r2-image
-     ls -lh bananapi-r2-image/*deb
+     fakeroot rm debian/bananapi-r2-image/lib/modules/${ver}/{build,source}
+     fakeroot mkdir debian/bananapi-r2-image/lib/modules/${ver}/kernel/extras
+     fakeroot cp cryptodev-linux-1.9/cryptodev.ko debian/bananapi-r2-image/lib/modules/${ver}/kernel/extras
+     fakeroot sed -i "s/myversion/${kernver}/" debian/bananapi-r2-image/DEBIAN/control
+     fakeroot sed -i "s/linux image/linux image ${kernver}/" debian/bananapi-r2-image/DEBIAN/control
+     cd debian
+     fakeroot dpkg-deb --build bananapi-r2-image ../debian
+     ls -lh *.deb
  else
-     echo "first build kernel"
+     echo "first build kernel ${ver}"
+     echo "eg: ./build kernel"
+     echo "eg: ./build cryptodev"
  fi
 ;;
 "kernel")
