@@ -80,10 +80,10 @@ case $1 in
   mkdir -p debian/bananapi-r2-image/boot/bananapi/bpi-r2/linux/
   mkdir -p debian/bananapi-r2-image/lib/modules/
   if test -e ./uImage; then
-     cp ./uImage debian/bananapi-r2-image/boot/bananapi/bpi-r2/linux/uImage_${ver}
-     cp -r mod/lib/modules/${ver} debian/bananapi-r2-image/lib/modules/
-     chown -R root: debian/bananapi-r2-image/*
-     cd debian && dpkg-deb --build bananapi-r2-image bananapi-r2-image
+     fakeroot cp ./uImage debian/bananapi-r2-image/boot/bananapi/bpi-r2/linux/uImage_${ver}
+     fakeroot cp -r mod/lib/modules/${ver} debian/bananapi-r2-image/lib/modules/
+     #chown -R root: debian/bananapi-r2-image/*
+     cd debian && fakeroot dpkg-deb --build bananapi-r2-image bananapi-r2-image
      ls -lh bananapi-r2-image/*deb
  else
      echo "first build kernel"
