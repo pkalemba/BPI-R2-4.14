@@ -76,18 +76,18 @@ case $1 in
 "deb")
   echo "deb package ${ver}"
   # uImage_4.9.44-4.9_patched-00030-g328e50a6cb09
-  mkdir -p debian/bananapi-r2-image/boot/bananapi/bpi-r2/linux/
-  mkdir -p debian/bananapi-r2-image/lib/modules/
+  mkdir -p DEBIAN/bananapi-r2-image/boot/bananapi/bpi-r2/linux/
+  mkdir -p DEBIAN/bananapi-r2-image/lib/modules/
   if test -e ./uImage && test -d mod/lib/modules/${ver}; then
-     fakeroot cp ./uImage debian/bananapi-r2-image/boot/bananapi/bpi-r2/linux/uImage_${ver}
-     fakeroot cp -r mod/lib/modules/${ver} debian/bananapi-r2-image/lib/modules/
-     fakeroot rm debian/bananapi-r2-image/lib/modules/${ver}/{build,source}
-     fakeroot mkdir debian/bananapi-r2-image/lib/modules/${ver}/kernel/extras
-     fakeroot cp cryptodev-linux-1.9/cryptodev.ko debian/bananapi-r2-image/lib/modules/${ver}/kernel/extras
-     fakeroot sed -i "s/myversion/${kernver}/" debian/bananapi-r2-image/DEBIAN/control
-     fakeroot sed -i "s/linux image/linux image ${kernver}/" debian/bananapi-r2-image/DEBIAN/control
-     cd debian
-     fakeroot dpkg-deb --build bananapi-r2-image ../debian
+     fakeroot cp ./uImage DEBIAN/bananapi-r2-image/boot/bananapi/bpi-r2/linux/uImage_${ver}
+     fakeroot cp -r mod/lib/modules/${ver} DEBIAN/bananapi-r2-image/lib/modules/
+     fakeroot rm DEBIAN/bananapi-r2-image/lib/modules/${ver}/{build,source}
+     fakeroot mkdir DEBIAN/bananapi-r2-image/lib/modules/${ver}/kernel/extras
+     fakeroot cp cryptodev-linux-1.9/cryptodev.ko DEBIAN/bananapi-r2-image/lib/modules/${ver}/kernel/extras
+     fakeroot sed -i "s/myversion/${kernver}/" DEBIAN/bananapi-r2-image/DEBIAN/control
+     fakeroot sed -i "s/linux image/linux image ${kernver}/" DEBIAN/bananapi-r2-image/DEBIAN/control
+     cd DEBIAN
+     fakeroot dpkg-deb --build bananapi-r2-image ../DEBIAN
      ls -lh *.deb
  else
      echo "first build kernel ${ver}"

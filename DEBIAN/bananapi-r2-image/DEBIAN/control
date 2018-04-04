@@ -1,0 +1,9 @@
+Package: bananapi-r2-image
+Version: 4.9.44
+Section: custom
+Priority: optional
+Architecture: armv7l
+Multi-Arch: no
+Essential: no
+Maintainer: xbgmsharp@gmail.com
+Description: BPI-R2 linux image 4.9.44
