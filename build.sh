@@ -8,8 +8,9 @@ mkdir -p $INSTALL_MOD_PATH
 
 kernver=$(make kernelversion)
 gitbranch=$(git rev-parse --abbrev-ref HEAD)
-d=$(date +%Y%m%d)
 gitrev=$(git rev-parse --short --verify $gitbranch)
+gittag=$(git describe 2>/dev/null | awk -F- '{printf("-%05d-%s", $(NF-1),$(NF))}')
+ver=${kernver}-${gitbranch}${gittag}
 export LOCALVERSION="-${gitbranch}"
 
 export KDIR=$(pwd)
@@ -69,18 +70,34 @@ case $1 in
   mkdir -p SD/BPI-BOOT/bananapi/bpi-r2/linux/
   cp uImage SD/BPI-BOOT/bananapi/bpi-r2/linux/
   mkdir -p SD/BPI-ROOT/lib/modules/
-  cp -r mod/lib/modules/4.9.44-bpi-r2+ SD/BPI-ROOT/lib/modules/
+  cp -r mod/lib/modules/ SD/BPI-ROOT/lib/modules/
   filename=bpi-r2-4.9.tar.gz
   (cd SD; tar -czf $filename BPI-BOOT BPI-ROOT;md5sum $filename > $filename.md5;ls -lh $filename)
 ;;
+"deb")
+  echo "deb package ${ver}"
+  # uImage_4.9.44-4.9_patched-00030-g328e50a6cb09
+  mkdir -p debian/bananapi-r2-image/boot/bananapi/bpi-r2/linux/
+  mkdir -p debian/bananapi-r2-image/lib/modules/
+  if test -e ./uImage; then
+     cp ./uImage debian/bananapi-r2-image/boot/bananapi/bpi-r2/linux/uImage_${ver}
+     cp -r mod/lib/modules/${ver} debian/bananapi-r2-image/lib/modules/
+     chown -R root: debian/bananapi-r2-image/*
+     cd debian && dpkg-deb --build bananapi-r2-image bananapi-r2-image
+     ls -lh bananapi-r2-image/*deb
+ else
+     echo "first build kernel"
+ fi
+;;
 "kernel")
+  echo "kernel"
   make ${CFLAGS}
   if [[ $? -eq 0 ]];then
     cat arch/arm/boot/zImage arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb > arch/arm/boot/zImage-dtb
     mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 -n "Linux Kernel $kernver" -d arch/arm/boot/zImage-dtb ./uImage
     make modules_install
   fi
-  ;;
+;;
 *)
 echo "This tool support following building command:"
 echo "--------------------------------------------------------------------------------"
@@ -92,6 +109,7 @@ echo "  openssl, build openssl with cryptodev kernel engine."
 echo "  mali, build mali kernel module."
 echo "  install, copy kernel image and module into a mount SD"
 echo "  pack, create tar-archive with kernel-image and modules"
+echo "  deb, create deb-archive with kernel-image and modules"
 echo "  kernel, build kernel image and module, cryptodev, mali"
 echo "--------------------------------------------------------------------------------"
   ;;
