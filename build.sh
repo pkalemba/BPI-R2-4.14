@@ -38,12 +38,12 @@ case $1 in
   cd cryptodev-linux-1.9
   make KERNEL_DIR=${KDIR}
   cd tests
-  make CC=arm-linux-gnueabihf-gcc ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
+  make CC=ccache arm-linux-gnueabihf-gcc ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
   ;;
 "openssl")
   echo openssl
   apt-get source openssl
-  cd openssl-1.1.0f
+  cd openssl-*
   sed -i 's/\tdh_shlibdeps/dh_shlibdeps -l\/usr\/arm-linux-gnueabihf\/lib:$(pwd)\/debian\/libssl1.1\/usr\/lib\/arm-linux-gnueabihf/' debian/rules
   LANG=C ARCH=arm DEB_BUILD_OPTIONS=nocheck CROSS_COMPILE=arm-linux-gnueabihf- \
 	DEB_CFLAGS_APPEND='-DHAVE_CRYPTODEV -DUSE_CRYPTODEV_DIGESTS' \
@@ -78,17 +78,19 @@ case $1 in
   # uImage_4.9.44-4.9_patched-00030-g328e50a6cb09
   mkdir -p DEBIAN/bananapi-r2-image/boot/bananapi/bpi-r2/linux/
   mkdir -p DEBIAN/bananapi-r2-image/lib/modules/
-  if test -e ./uImage && test -d mod/lib/modules/${ver}; then
+  if test -e ./uImage && test -d mod/lib/modules/4.9.44-bpi-r2-4.9_patched; then
      fakeroot cp ./uImage DEBIAN/bananapi-r2-image/boot/bananapi/bpi-r2/linux/uImage_${ver}
-     fakeroot cp -r mod/lib/modules/${ver} DEBIAN/bananapi-r2-image/lib/modules/
-     fakeroot rm DEBIAN/bananapi-r2-image/lib/modules/${ver}/{build,source}
-     fakeroot mkdir DEBIAN/bananapi-r2-image/lib/modules/${ver}/kernel/extras
-     fakeroot cp cryptodev-linux-1.9/cryptodev.ko DEBIAN/bananapi-r2-image/lib/modules/${ver}/kernel/extras
+     fakeroot cp -r mod/lib/modules/4.9.44-bpi-r2-4.9_patched DEBIAN/bananapi-r2-image/lib/modules/
+     fakeroot rm DEBIAN/bananapi-r2-image/lib/modules/4.9.44-bpi-r2-4.9_patched/{build,source}
+     fakeroot mkdir DEBIAN/bananapi-r2-image/lib/modules/4.9.44-bpi-r2-4.9_patched/kernel/extras
+     fakeroot cp cryptodev-linux-1.9/cryptodev.ko DEBIAN/bananapi-r2-image/lib/modules/4.9.44-bpi-r2-4.9_patched/kernel/extras
      fakeroot sed -i "s/myversion/${kernver}/" DEBIAN/bananapi-r2-image/DEBIAN/control
      fakeroot sed -i "s/linux image/linux image ${kernver}/" DEBIAN/bananapi-r2-image/DEBIAN/control
      cd DEBIAN
      fakeroot dpkg-deb --build bananapi-r2-image ../DEBIAN
      ls -lh *.deb
+     cd ..
+     cp DEBIAN/*.deb .
  else
      echo "first build kernel ${ver}"
      echo "eg: ./build kernel"
@@ -97,7 +99,7 @@ case $1 in
 ;;
 "kernel")
   echo "kernel"
-  make ${CFLAGS}
+  make CC='ccache gcc' ${CFLAGS}
   if [[ $? -eq 0 ]];then
     cat arch/arm/boot/zImage arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb > arch/arm/boot/zImage-dtb
     mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 -n "Linux Kernel $kernver" -d arch/arm/boot/zImage-dtb ./uImage
